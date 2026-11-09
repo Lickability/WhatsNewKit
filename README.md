@@ -481,7 +481,7 @@ Use `.perform { dismiss in ... }` for custom secondary actions. The callback rec
 
 `.openURL` uses SwiftUI's `openURL` environment action, so an app can intercept or replace URL handling. A nil URL does nothing. `.dismiss` closes the release notes; dismissing a view shown with `.present` closes only that secondary sheet.
 
-The manual and automatic sheet modifiers record the version when the outer sheet finishes dismissing, before invoking their `onDismiss` callback. Continue, custom dismissal, swipe dismissal, and clearing the bound item all use that completion path. Opening or closing secondary content does not record the version. The manual modifier stays attached while its item changes, preserving the presenting view's state. Automatic presentation selects its candidate once per modifier lifetime.
+The manual and automatic sheet modifiers record the version when the outer sheet finishes dismissing, before invoking their `onDismiss` callback. Continue, custom dismissal, swipe dismissal, and clearing the bound item all use that completion path. Opening or closing secondary content does not record the version. The manual modifier stays attached while its item changes, preserving the presenting view's state. Automatic presentation reads the current environment until the sheet is dismissed, so release notes supplied after the view first appears can still be presented. After dismissal, it stays suppressed for that modifier's lifetime.
 
 `PrimaryAction.onDismiss` retains its existing behavior: it runs immediately when the primary button requests dismissal, before the animation completes. It does not run for a swipe or secondary action. Use the sheet modifier's `onDismiss` for work that must wait for dismissal completion.
 

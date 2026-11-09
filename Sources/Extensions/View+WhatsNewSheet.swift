@@ -106,8 +106,7 @@ private struct AutomaticWhatsNewSheetViewModifier: ViewModifier {
     /// The optional closure to execute when dismissing the sheet
     let onDismiss: (() -> Void)?
     
-    @State private var whatsNew: WhatsNew?
-    @State private var hasCheckedForPresentation = false
+    @State private var isDismissed = false
 
     @Environment(\.whatsNew)
     private var whatsNewEnvironment
@@ -115,16 +114,14 @@ private struct AutomaticWhatsNewSheetViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .sheet(
-                whatsNew: $whatsNew,
+                whatsNew: Binding(
+                    get: { isDismissed ? nil : whatsNewEnvironment.whatsNew() },
+                    set: { isDismissed = $0 == nil }
+                ),
                 versionStore: whatsNewEnvironment.whatsNewVersionStore,
                 layout: layout ?? whatsNewEnvironment.defaultLayout,
                 onDismiss: onDismiss
             )
-            .onAppear {
-                guard !hasCheckedForPresentation else { return }
-                hasCheckedForPresentation = true
-                whatsNew = whatsNewEnvironment.whatsNew()
-            }
     }
 }
 
