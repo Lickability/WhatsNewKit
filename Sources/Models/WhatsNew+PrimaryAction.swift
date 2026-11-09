@@ -21,7 +21,7 @@ public extension WhatsNew {
         /// The optional HapticFeedback
         public var hapticFeedback: HapticFeedback?
         
-        /// The optional on dismiss closure
+        /// Called when the primary button requests dismissal, before its animation completes.
         public var onDismiss: (@MainActor () -> Void)?
         
         // MARK: Initializer
@@ -32,7 +32,7 @@ public extension WhatsNew {
         ///   - backgroundColor: The background color. Default value `.accentColor`
         ///   - foregroundColor: The foreground color. Default value `.white`
         ///   - hapticFeedback: The optional HapticFeedback. Default value `nil`
-        ///   - onDismiss: The optional on dismiss closure. Default value `nil`
+        ///   - onDismiss: Called when the primary button requests dismissal. Use the sheet modifier’s onDismiss for completion. Default value `nil`
         public init(
             title: Text = "Continue",
             backgroundColor: Color = .accentColor,

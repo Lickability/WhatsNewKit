@@ -71,7 +71,7 @@ This raises the minimum supported versions from iOS 13 to iOS 26 and from macOS 
 
 ## Swift 6 migration
 
-UI callbacks (`PrimaryAction.onDismiss`, `SecondaryAction.Action.custom`), feature image builders, haptic execution, and `WhatsNewView` are main-actor isolated. Create and use views from a main-actor context; callbacks can directly access main-actor UI state. The existing `Binding<PresentationMode>` callback API remains available.
+UI callbacks (`PrimaryAction.onDismiss`, `SecondaryAction.Action.custom`), feature image builders, haptic execution, and `WhatsNewView` are main-actor isolated. Create and use views from a main-actor context; callbacks can directly access main-actor UI state. The old `Binding<PresentationMode>` callback remains available with a deprecation warning; migrate to `.perform { dismiss in ... }`.
 
 `WhatsNew.Version` and `WhatsNew.Layout` are `Sendable`. `WhatsNew.Layout.default` is immutable; customize a local copy and pass it to a view or `WhatsNewEnvironment(defaultLayout:)` instead of mutating a global setting.
 
@@ -458,21 +458,34 @@ let secondaryActionOpenURL = WhatsNew.SecondaryAction(
     title: "Read more",
     foregroundColor: .blue,
     hapticFeedback: .selection,
-    action: .open(
-        url: .init(string: "https://github.com/SvenTiigi/WhatsNewKit")
+    action: .openURL(
+        .init(string: "https://github.com/SvenTiigi/WhatsNewKit")
     )
 )
 
 // SecondaryAction with custom execution
 let secondaryActionCustom = WhatsNew.SecondaryAction(
     title: "Custom",
-    action: .custom { presentationMode in
-        // ...
+    action: .perform { dismiss in
+        // Perform your action, then optionally dismiss the release notes.
+        dismiss()
     }
 )
 ```
 
 > Note: HapticFeedback will only be executed on iOS
+
+### Presentation lifecycle
+
+Use `.perform { dismiss in ... }` for custom secondary actions. The callback receives SwiftUI's `DismissAction` for the release-notes presentation. Replace `presentationMode.wrappedValue.dismiss()` with `dismiss()`. The old `.custom` callback is deprecated but still supported. If you switch over `SecondaryAction.Action`, handle its new `perform`, `dismiss`, and `openURL` cases.
+
+`.openURL` uses SwiftUI's `openURL` environment action, so an app can intercept or replace URL handling. A nil URL does nothing. `.dismiss` closes the release notes; dismissing a view shown with `.present` closes only that secondary sheet.
+
+The manual and automatic sheet modifiers record the version when the outer sheet finishes dismissing, before invoking their `onDismiss` callback. Continue, custom dismissal, swipe dismissal, and clearing the bound item all use that completion path. Opening or closing secondary content does not record the version. The manual modifier stays attached while its item changes, preserving the presenting view's state. Automatic presentation selects its candidate once per modifier lifetime.
+
+`PrimaryAction.onDismiss` retains its existing behavior: it runs immediately when the primary button requests dismissal, before the animation completes. It does not run for a swipe or secondary action. Use the sheet modifier's `onDismiss` for work that must wait for dismissal completion.
+
+When embedding `WhatsNewView` directly or using `WhatsNewViewController`, version recording follows the view's presentation/disappearance lifecycle; its own secondary sheet is excluded from disappearance-based recording. Use the supplied sheet modifiers when you need the explicit completion callback.
 
 ## Layout
 

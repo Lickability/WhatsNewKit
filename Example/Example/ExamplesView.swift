@@ -22,6 +22,9 @@ extension ExamplesView: View {
     /// The content and behavior of the view
     var body: some View {
         List {
+            NavigationLink("Presentation lifecycle") {
+                PresentationExampleView()
+            }
             Section(
                 header: Text(
                     verbatim: "Examples"
@@ -224,4 +227,90 @@ private extension AttributeContainer {
         return container
     }
     
+}
+
+#Preview {
+    NavigationStack { ExamplesView() }
+}
+
+private struct PresentationExampleView: View {
+    @State private var store = InMemoryWhatsNewVersionStore()
+    @State private var whatsNew: WhatsNew?
+    @State private var primaryActions = 0
+    @State private var dismissals = 0
+    @State private var openedURLs = 0
+
+    var body: some View {
+        List {
+            Section("Present") {
+                Button("Show nested details") {
+                    show(.present { PresentationDetailsView(store: store) })
+                }
+                Button("Show custom dismissal") {
+                    show(.perform { dismiss in dismiss() })
+                }
+                Button("Show URL action") {
+                    show(.openURL(URL(string: "https://example.com/release-notes")))
+                }
+                Button("Reset seen version") { store.removeAll(); dismissals = 0 }
+            }
+            Section("Results") {
+                Text("Seen: \(store.hasPresented("1.0.0") ? "yes" : "no")")
+                Text("Primary actions: \(primaryActions)")
+                Text("Completed dismissals: \(dismissals)")
+                Text("Handled URLs: \(openedURLs)")
+                PresentationCounter()
+            }
+        }
+        .navigationTitle("Presentation lifecycle")
+        .sheet(whatsNew: $whatsNew, versionStore: store) { dismissals += 1 }
+        .environment(\.openURL, OpenURLAction { _ in
+            openedURLs += 1
+            return .handled
+        })
+    }
+
+    private func show(_ action: WhatsNew.SecondaryAction.Action) {
+        whatsNew = WhatsNew(
+            version: "1.0.0",
+            title: "Release Notes",
+            features: [.init(image: .init(systemName: "checkmark.circle"),
+                             title: "Presentation lifecycle",
+                             subtitle: "The version is recorded when these release notes finish dismissing.")],
+            primaryAction: .init(onDismiss: { primaryActions += 1 }),
+            secondaryAction: .init(title: "Secondary action", action: action)
+        )
+    }
+}
+
+private struct PresentationDetailsView: View {
+    let store: InMemoryWhatsNewVersionStore
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Text("Release notes seen: \(store.hasPresented("1.0.0") ? "yes" : "no")")
+                .navigationTitle("Details")
+                .toolbar { Button("Done") { dismiss() } }
+        }
+    }
+}
+
+private struct PresentationCounter: View {
+    @State private var count = 0
+    var body: some View {
+        Button("Parent counter: \(count)") { count += 1 }
+    }
+}
+
+#Preview("Presentation lifecycle") {
+    NavigationStack { PresentationExampleView() }
+}
+
+#Preview("Nested details") {
+    PresentationDetailsView(store: InMemoryWhatsNewVersionStore())
+}
+
+#Preview("Preserved parent state") {
+    PresentationCounter()
 }
