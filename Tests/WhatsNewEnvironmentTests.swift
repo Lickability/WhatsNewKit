@@ -6,6 +6,23 @@ import XCTest
 /// The WhatsNewEnvironmentTests
 final class WhatsNewEnvironmentTests: WhatsNewKitTestCase {
     
+    func testCustomLayoutIsScopedToItsEnvironment() {
+        var layout = WhatsNew.Layout.default
+        layout.featureListSpacing = 42
+        let environment = WhatsNewEnvironment(defaultLayout: layout)
+        XCTAssertEqual(environment.defaultLayout.featureListSpacing, 42)
+        XCTAssertEqual(WhatsNewEnvironment().defaultLayout.featureListSpacing, 25)
+        XCTAssertEqual(WhatsNew.Layout.default.featureListSpacing, 25)
+    }
+
+    func testEnvironmentDefaultsAreIndependent() {
+        let first = WhatsNewEnvironment.Key.defaultValue
+        let second = WhatsNewEnvironment.Key.defaultValue
+        XCTAssertFalse(first === second)
+        XCTAssertTrue(first.whatsNewCollection.isEmpty)
+        XCTAssertTrue(second.whatsNewCollection.isEmpty)
+    }
+
     func testInitial() {
         let version_1_0_0: WhatsNew.Version = "1.0.0"
         let whatsNew_1_0_0 = self.makeWhatsNew(from: version_1_0_0)

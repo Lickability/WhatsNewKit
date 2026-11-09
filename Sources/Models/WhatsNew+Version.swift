@@ -5,7 +5,7 @@ import Foundation
 public extension WhatsNew {
     
     /// A WhatsNew Version
-    struct Version: Hashable {
+    struct Version: Hashable, Sendable {
         
         // MARK: Properties
         

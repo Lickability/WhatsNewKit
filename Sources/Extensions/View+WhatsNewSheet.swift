@@ -47,38 +47,28 @@ private struct ManualWhatsNewSheetViewModifier: ViewModifier {
     /// The closure to execute when dismissing the sheet
     let onDismiss: (() -> Void)?
     
-    // MARK: ViewModifier
-    
-    /// Gets the current body of the caller.
-    /// - Parameter content: The Content
-    func body(
-        content: Content
-    ) -> some View {
-        // Check if a WhatsNew object is available
-        if let whatsNew = self.whatsNew.wrappedValue {
-            // Check if the WhatsNew Version has already been presented
-            if self.versionStore?.hasPresented(whatsNew.version) == true {
-                // Show content
-                content
-            } else {
-                // Show WhatsNew Sheet
-                content.sheet(
-                    item: self.whatsNew,
-                    onDismiss: self.onDismiss
-                ) { whatsNew in
-                    WhatsNewView(
-                        whatsNew: whatsNew,
-                        versionStore: self.versionStore,
-                        layout: self.layout
-                    )
-                }
+    /// The actual presentation, retained until the outer sheet finishes dismissing.
+    @State private var presentation = WhatsNewPresentation()
+
+    func body(content: Content) -> some View {
+        content.sheet(
+            item: Binding(
+                get: {
+                    presentation.eligibleItem(whatsNew.wrappedValue, versionStore: versionStore)
+                },
+                set: { whatsNew.wrappedValue = $0 }
+            ),
+            onDismiss: {
+                presentation.didDismiss()
+                onDismiss?()
             }
-        } else {
-            // Otherwise show content
-            content
+        ) { item in
+            WhatsNewView(whatsNew: item, layout: layout)
+                .onAppear {
+                    presentation.didAppear(item, versionStore: versionStore)
+                }
         }
     }
-    
 }
 
 // MARK: - View+whatsNewSheet()
@@ -116,40 +106,44 @@ private struct AutomaticWhatsNewSheetViewModifier: ViewModifier {
     /// The optional closure to execute when dismissing the sheet
     let onDismiss: (() -> Void)?
     
-    /// Bool value if sheet is dismissed
-    @State
-    private var isDismissed: Bool?
-    
-    /// The WhatsNewEnvironment
+    @State private var isDismissed = false
+
     @Environment(\.whatsNew)
     private var whatsNewEnvironment
-    
-    // MARK: ViewModifier
-    
-    /// Gets the current body of the caller.
-    /// - Parameter content: The Content
-    func body(
-        content: Content
-    ) -> some View {
-        content.sheet(
-            item: .init(
-                get: {
-                    self.isDismissed == true
-                        ? nil
-                        : self.whatsNewEnvironment.whatsNew()
-                },
-                set: {
-                    self.isDismissed = $0 == nil
-                }
-            ),
-            onDismiss: self.onDismiss
-        ) { whatsNew in
-            WhatsNewView(
-                whatsNew: whatsNew,
-                versionStore: self.whatsNewEnvironment.whatsNewVersionStore,
-                layout: self.layout ?? self.whatsNewEnvironment.defaultLayout
+
+    func body(content: Content) -> some View {
+        content
+            .sheet(
+                whatsNew: Binding(
+                    get: { isDismissed ? nil : whatsNewEnvironment.whatsNew() },
+                    set: { isDismissed = $0 == nil }
+                ),
+                versionStore: whatsNewEnvironment.whatsNewVersionStore,
+                layout: layout ?? whatsNewEnvironment.defaultLayout,
+                onDismiss: onDismiss
             )
-        }
     }
-    
+}
+
+#Preview("Manual presentation") {
+    SheetPreview()
+}
+
+private struct SheetPreview: View {
+    @State private var whatsNew: WhatsNew?
+
+    var body: some View {
+        Button("Show What's New") {
+            whatsNew = WhatsNew(title: "What's New", features: [])
+        }
+        .sheet(whatsNew: $whatsNew)
+    }
+}
+
+#Preview("Automatic presentation") {
+    Text("Example content")
+        .whatsNewSheet()
+        .environment(\.whatsNew, WhatsNewEnvironment(whatsNewCollection: [
+            WhatsNew(title: "What's New", features: [])
+        ]))
 }

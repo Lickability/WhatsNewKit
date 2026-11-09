@@ -7,8 +7,10 @@ public extension WhatsNewEnvironment {
     /// The WhatsNewEnvironment Key
     enum Key: EnvironmentKey {
         
-        /// The default value for the environment key
-        public static var defaultValue = WhatsNewEnvironment()
+        /// A fresh default environment. Override it with `EnvironmentValues.whatsNew`.
+        public static var defaultValue: WhatsNewEnvironment {
+            WhatsNewEnvironment()
+        }
         
     }
     

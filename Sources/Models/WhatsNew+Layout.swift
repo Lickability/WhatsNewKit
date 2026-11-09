@@ -5,7 +5,7 @@ import SwiftUI
 public extension WhatsNew {
     
     /// The WhatsNew Layout
-    struct Layout {
+    struct Layout: Sendable {
         
         // MARK: Properties
 
@@ -102,8 +102,8 @@ public extension WhatsNew {
 
 public extension WhatsNew.Layout {
     
-    /// The mutable default Layout
-    static var `default` = Self()
+    /// The standard layout. Pass a customized copy to a view or environment.
+    static let `default` = Self()
     
 }
 

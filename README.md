@@ -62,6 +62,35 @@ struct ContentView: View {
 - [x] Runs on iOS, macOS and visionOS 📱 🖥 👓
 - [x] Adjustable layout 🔧
 
+## Requirements
+
+- iOS 26 or later, macOS 26 or later, or visionOS 1 or later.
+- Xcode 26 or later for iOS and macOS development. The package and example use Swift 6 language mode (Swift tools 6.0 or later).
+
+This raises the minimum supported versions from iOS 13 to iOS 26 and from macOS 11 to macOS 26. Applications supporting earlier systems must remain on an earlier release.
+
+## Swift 6 migration
+
+UI callbacks (`PrimaryAction.onDismiss`, `SecondaryAction.Action.custom`), feature image builders, haptic execution, and `WhatsNewView` are main-actor isolated. Create and use views from a main-actor context; callbacks can directly access main-actor UI state. The old `Binding<PresentationMode>` callback remains available with a deprecation warning; migrate to `.perform { dismiss in ... }`.
+
+`WhatsNew.Version` and `WhatsNew.Layout` are `Sendable`. `WhatsNew.Layout.default` is immutable; customize a local copy and pass it to a view or `WhatsNewEnvironment(defaultLayout:)` instead of mutating a global setting.
+
+`InMemoryWhatsNewVersionStore.shared` belongs to the main actor. Independently created stores remain ordinary synchronous objects owned by their caller; they are not `Sendable`. Version store protocols remain synchronous and do not require actor isolation or `Sendable` conformance from custom implementations.
+
+`WhatsNewEnvironment.Key.defaultValue` is now read-only and creates an independent default environment. Replace direct assignments to that key with `.environment(\.whatsNew, yourEnvironment)`. `WhatsNewEnvironment` remains open for subclassing; environments and UI models containing views or closures are not declared `Sendable`.
+
+## Development
+
+CI uses the `xcode-27` runner and selects the latest installed Xcode with `setup-xcode` (`latest`, including beta releases). It runs the package tests on the latest installed iOS runtime and macOS, builds the package for visionOS, and builds the example for all three platforms. Package and workflow changes trigger these checks.
+
+Run the macOS package tests with `swift test`. To run iOS tests locally, choose an installed iOS 26 or newer simulator:
+
+```sh
+xcodebuild test -scheme WhatsNewKit -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
+```
+
+The example requires iOS 26, macOS 26, or visionOS 1. Open `Example/Example.xcodeproj` and select the `Example` scheme.
+
 ## Installation
 
 ### Swift Package Manager
@@ -429,30 +458,44 @@ let secondaryActionOpenURL = WhatsNew.SecondaryAction(
     title: "Read more",
     foregroundColor: .blue,
     hapticFeedback: .selection,
-    action: .open(
-        url: .init(string: "https://github.com/SvenTiigi/WhatsNewKit")
+    action: .openURL(
+        .init(string: "https://github.com/SvenTiigi/WhatsNewKit")
     )
 )
 
 // SecondaryAction with custom execution
 let secondaryActionCustom = WhatsNew.SecondaryAction(
     title: "Custom",
-    action: .custom { presentationMode in
-        // ...
+    action: .perform { dismiss in
+        // Perform your action, then optionally dismiss the release notes.
+        dismiss()
     }
 )
 ```
 
 > Note: HapticFeedback will only be executed on iOS
 
+### Presentation lifecycle
+
+Use `.perform { dismiss in ... }` for custom secondary actions. The callback receives SwiftUI's `DismissAction` for the release-notes presentation. Replace `presentationMode.wrappedValue.dismiss()` with `dismiss()`. The old `.custom` callback is deprecated but still supported. If you switch over `SecondaryAction.Action`, handle its new `perform`, `dismiss`, and `openURL` cases.
+
+`.openURL` uses SwiftUI's `openURL` environment action, so an app can intercept or replace URL handling. A nil URL does nothing. `.dismiss` closes the release notes; dismissing a view shown with `.present` closes only that secondary sheet.
+
+The manual and automatic sheet modifiers record the version when the outer sheet finishes dismissing, before invoking their `onDismiss` callback. Continue, custom dismissal, swipe dismissal, and clearing the bound item all use that completion path. Opening or closing secondary content does not record the version. The manual modifier stays attached while its item changes, preserving the presenting view's state. Automatic presentation reads the current environment until the sheet is dismissed, so release notes supplied after the view first appears can still be presented. After dismissal, it stays suppressed for that modifier's lifetime.
+
+`PrimaryAction.onDismiss` retains its existing behavior: it runs immediately when the primary button requests dismissal, before the animation completes. It does not run for a swipe or secondary action. Use the sheet modifier's `onDismiss` for work that must wait for dismissal completion.
+
+When embedding `WhatsNewView` directly or using `WhatsNewViewController`, version recording follows the view's presentation/disappearance lifecycle; its own secondary sheet is excluded from disappearance-based recording. Use the supplied sheet modifiers when you need the explicit completion callback.
+
 ## Layout
 
 WhatsNewKit allows you to adjust the layout of a presented `WhatsNewView` in various ways.
 
-The most simple way is by mutating the `WhatsNew.Layout.default` instance.
+Create a layout, then pass it to the environment or an individual presentation. The standard `WhatsNew.Layout.default` is immutable.
 
 ```swift
-WhatsNew.Layout.default.featureListSpacing = 35
+var layout = WhatsNew.Layout.default
+layout.featureListSpacing = 35
 ```
 
 When using the automatic presentation style you can supply a default layout when initializing the WhatsNewEnvironment.
@@ -461,11 +504,8 @@ When using the automatic presentation style you can supply a default layout when
 .environment(
     \.whatsNew,
     .init(
-        defaultLayout: WhatsNew.Layout(
-            showsScrollViewIndicators: true,
-            featureListSpacing: 35
-        ),
-        whatsNew: self
+        defaultLayout: layout,
+        whatsNewCollection: self
     )
 )
 ```

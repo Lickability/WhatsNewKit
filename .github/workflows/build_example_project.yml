@@ -4,19 +4,41 @@ on:
   workflow_dispatch:
   push:
     paths:
+      - "Package.swift"
       - "Example/**"
       - "Sources/**"
+      - ".github/workflows/build_example_project.yml"
   pull_request:
     paths:
+      - "Package.swift"
       - "Example/**"
       - "Sources/**"
+      - ".github/workflows/build_example_project.yml"
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    name: Build iOS example project
-    runs-on: macos-14
+    name: Build example on ${{ matrix.platform }}
+    runs-on: xcode-27
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: iOS
+            destination: generic/platform=iOS Simulator
+          - platform: macOS
+            destination: platform=macOS
+          - platform: visionOS
+            destination: generic/platform=visionOS Simulator
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v7
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest
       - name: Build
-        run: xcodebuild build -project Example/Example.xcodeproj -scheme Example -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14'
+        env:
+          DESTINATION: ${{ matrix.destination }}
+        run: xcodebuild build -project Example/Example.xcodeproj -scheme Example -destination "$DESTINATION" CODE_SIGNING_ALLOWED=NO

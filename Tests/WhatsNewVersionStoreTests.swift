@@ -22,6 +22,18 @@ final class WhatsNewVersionStoreTests: WhatsNewKitTestCase {
         )
     }
     
+    @MainActor
+    func testSharedStoreCanBeUsedSynchronouslyOnMainActor() {
+        let store = InMemoryWhatsNewVersionStore.shared
+        let original = store.versions
+        defer { store.versions = original }
+        store.removeAll()
+        store.save(presentedVersion: "1.0.0")
+        XCTAssertTrue(InMemoryWhatsNewVersionStore.shared.hasPresented("1.0.0"))
+        store.remove(presentedVersion: "1.0.0")
+        XCTAssertTrue(store.presentedVersions.isEmpty)
+    }
+
     func testUserDefaultsWhatsNewVersionStore() {
         final class FakeUserDefaults: UserDefaults {
             var store: [String: Any] = .init()

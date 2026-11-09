@@ -7,7 +7,8 @@ public final class InMemoryWhatsNewVersionStore {
     
     // MARK: Static-Properties
     
-    /// The shared `InMemoryWhatsNewVersionStore` instance
+    /// The shared instance belongs to the main actor. Create a local store for other contexts.
+    @MainActor
     public static let shared = InMemoryWhatsNewVersionStore()
     
     // MARK: Properties

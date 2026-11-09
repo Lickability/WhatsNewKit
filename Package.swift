@@ -1,12 +1,12 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 
 import PackageDescription
 
 let package = Package(
     name: "WhatsNewKit",
     platforms: [
-        .iOS(.v13),
-        .macOS(.v11),
+        .iOS("26.0"),
+        .macOS("26.0"),
         .visionOS(.v1)
     ],
     products: [

@@ -3,6 +3,7 @@ import SwiftUI
 // MARK: - WhatsNewView
 
 /// A WhatsNewView
+@MainActor
 public struct WhatsNewView {
     
     // MARK: Properties
@@ -20,7 +21,16 @@ public struct WhatsNewView {
     @State
     private var secondaryActionPresentedView: WhatsNew.SecondaryAction.Action.PresentedView?
     
-    /// The PresentationMode
+    @Environment(\.dismiss)
+    private var dismiss
+
+    @Environment(\.openURL)
+    private var openURL
+
+    @Environment(\.isPresented)
+    private var isPresented
+
+    /// The legacy PresentationMode, used only for deprecated custom actions.
     @Environment(\.presentationMode)
     private var presentationMode
     
@@ -86,7 +96,7 @@ extension WhatsNewView: View {
                     )
             }
             #if os(iOS)
-            .alwaysBounceVertical(false)
+            .scrollBounceBehavior(.basedOnSize, axes: .vertical)
             #endif
             // Footer
             VStack {
@@ -108,14 +118,28 @@ extension WhatsNewView: View {
             item: self.$secondaryActionPresentedView,
             content: { $0.view }
         )
+        .onChange(of: isPresented) { wasPresented, isPresented in
+            if wasPresented && !isPresented {
+                self.recordPresentedVersion()
+            }
+        }
         .onDisappear {
-            // Save presented WhatsNew Version, if available
-            self.whatsNewVersionStore?.save(
-                presentedVersion: self.whatsNew.version
-            )
+            // Managed sheets record at their outer onDismiss. For a directly hosted
+            // view, ignore temporary disappearance behind its secondary sheet.
+            if self.secondaryActionPresentedView == nil {
+                self.recordPresentedVersion()
+            }
         }
     }
     
+}
+
+private extension WhatsNewView {
+    func recordPresentedVersion() {
+        guard let whatsNewVersionStore,
+              !whatsNewVersionStore.hasPresented(whatsNew.version) else { return }
+        whatsNewVersionStore.save(presentedVersion: whatsNew.version)
+    }
 }
 
 // MARK: - Title
@@ -195,6 +219,14 @@ private extension WhatsNewView {
                         case .present(let view):
                             // Set secondary action presented view
                             self.secondaryActionPresentedView = .init(view: view)
+                        case .perform(let action):
+                            action(self.dismiss)
+                        case .dismiss:
+                            self.dismiss()
+                        case .openURL(let url):
+                            if let url {
+                                self.openURL(url)
+                            }
                         case .custom(let action):
                             // Invoke action with PresentationMode
                             action(self.presentationMode)
@@ -218,7 +250,7 @@ private extension WhatsNewView {
                     // Invoke HapticFeedback, if available
                     self.whatsNew.primaryAction.hapticFeedback?()
                     // Dismiss
-                    self.presentationMode.wrappedValue.dismiss()
+                    self.dismiss()
                     // Invoke on dismiss, if available
                     self.whatsNew.primaryAction.onDismiss?()
                 }
@@ -239,4 +271,35 @@ private extension WhatsNewView {
         }
     }
     
+}
+
+#Preview("Short content") {
+    WhatsNewView(
+        whatsNew: WhatsNew(
+            title: "What's New",
+            features: [
+                .init(
+                    image: .init(systemName: "star.fill"),
+                    title: "A new feature",
+                    subtitle: "Discover the latest improvements."
+                )
+            ]
+        )
+    )
+}
+
+#Preview("Scrolling content at accessibility size") {
+    WhatsNewView(
+        whatsNew: WhatsNew(
+            title: "What's New",
+            features: (1...8).map { index in
+                .init(
+                    image: .init(systemName: "star.fill"),
+                    title: .init("Feature \(index)"),
+                    subtitle: "Discover the latest improvements, with longer descriptions that remain readable at larger text sizes."
+                )
+            }
+        )
+    )
+    .dynamicTypeSize(.accessibility3)
 }
