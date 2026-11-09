@@ -42,7 +42,8 @@ final class WhatsNewVersionTests: WhatsNewKitTestCase {
     }
     
     func testCurrent() {
-        class FakeBundle: Bundle {
+        // Bundle requires restating its conformance; this final subclass adds only immutable state.
+        final class FakeBundle: Bundle, @unchecked Sendable {
             let shortVersionString: String
             init(shortVersionString: String) {
                 self.shortVersionString = shortVersionString

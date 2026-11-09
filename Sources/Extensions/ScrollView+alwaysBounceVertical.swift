@@ -8,6 +8,7 @@ extension ScrollView {
     /// Resolve the underlying `UIScrollView` to update the `alwaysBounceVertical` attribute which is
     /// a Boolean value that determines whether bouncing always occurs when vertical scrolling reaches the end of the content.
     /// - Parameter alwaysBounceVertical: Bool value if the UIScrollView should always bounce vertical
+    @MainActor
     func alwaysBounceVertical(
         _ alwaysBounceVertical: Bool
     ) -> some View {
@@ -38,7 +39,7 @@ private struct ViewControllerResolver: UIViewControllerRepresentable {
     // MARK: Typealias
     
     /// A typealias represents a UIViewController resolver closure
-    typealias Resolver = (UIViewController) -> Void
+    typealias Resolver = @MainActor (UIViewController) -> Void
     
     // MARK: Properties
     

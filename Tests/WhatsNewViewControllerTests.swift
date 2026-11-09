@@ -6,6 +6,7 @@ import XCTest
 /// The WhatsNewViewControllerTests
 final class WhatsNewViewControllerTests: WhatsNewKitTestCase {
     
+    @MainActor
     func testInitializer() {
         let versionStore = InMemoryWhatsNewVersionStore()
         let whatsNew = self.makeWhatsNew(from: self.makeRandomWhatsNewVersion())

@@ -65,9 +65,17 @@ struct ContentView: View {
 ## Requirements
 
 - iOS 26 or later, macOS 26 or later, or visionOS 1 or later.
-- Xcode 26 or later for iOS and macOS development. The package continues to use Swift 5 language mode.
+- Xcode 26 or later for iOS and macOS development. The package and example use Swift 6 language mode (Swift tools 6.0 or later).
 
 This raises the minimum supported versions from iOS 13 to iOS 26 and from macOS 11 to macOS 26. Applications supporting earlier systems must remain on an earlier release.
+
+## Swift 6 migration
+
+UI callbacks (`PrimaryAction.onDismiss`, `SecondaryAction.Action.custom`), feature image builders, haptic execution, and `WhatsNewView` are main-actor isolated. Create and use views from a main-actor context; callbacks can directly access main-actor UI state. The existing `Binding<PresentationMode>` callback API remains available.
+
+`WhatsNew.Version` and `WhatsNew.Layout` are `Sendable`. The mutable `WhatsNew.Layout.default` and shared `InMemoryWhatsNewVersionStore` use synchronized storage. Version store protocols remain synchronous and do not require actor isolation or `Sendable` conformance from custom implementations. Reading `versions` returns a snapshot; assigning it replaces the set. Use `save`, `remove`, and `removeAll` for atomic mutations instead of concurrent read-modify-write operations on `versions`.
+
+`WhatsNewEnvironment.Key.defaultValue` is now read-only and creates an independent default environment. Replace direct assignments to that key with `.environment(\.whatsNew, yourEnvironment)`. `WhatsNewEnvironment` remains open for subclassing; environments and UI models containing views or closures are not declared `Sendable`.
 
 ## Development
 

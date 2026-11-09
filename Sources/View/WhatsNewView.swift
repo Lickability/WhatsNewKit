@@ -3,6 +3,7 @@ import SwiftUI
 // MARK: - WhatsNewView
 
 /// A WhatsNewView
+@MainActor
 public struct WhatsNewView {
     
     // MARK: Properties
@@ -239,4 +240,19 @@ private extension WhatsNewView {
         }
     }
     
+}
+
+#Preview {
+    WhatsNewView(
+        whatsNew: WhatsNew(
+            title: "What's New",
+            features: [
+                .init(
+                    image: .init(systemName: "star.fill"),
+                    title: "A new feature",
+                    subtitle: "Discover the latest improvements."
+                )
+            ]
+        )
+    )
 }

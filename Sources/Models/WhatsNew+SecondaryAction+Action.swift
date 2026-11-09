@@ -9,7 +9,7 @@ public extension WhatsNew.SecondaryAction {
         /// Present View
         case present(AnyView)
         /// Custom Action
-        case custom((Binding<PresentationMode>) -> Void)
+        case custom(@MainActor (Binding<PresentationMode>) -> Void)
     }
     
 }
@@ -21,9 +21,10 @@ public extension WhatsNew.SecondaryAction.Action {
     /// Present View on WhatsNewView
     /// - Parameters:
     ///   - content: The ViewBuilder closure that produces the Content View
+    @MainActor
     static func present<Content: View>(
         @ViewBuilder
-        _ content: () -> Content
+        _ content: @MainActor () -> Content
     ) -> Self {
         .present(.init(content()))
     }
@@ -35,8 +36,10 @@ public extension WhatsNew.SecondaryAction.Action {
 public extension WhatsNew.SecondaryAction.Action {
     
     /// Dismiss WhatsNewView
-    static let dismiss: Self = .custom { presentationMode in
-        presentationMode.wrappedValue.dismiss()
+    static var dismiss: Self {
+        .custom { presentationMode in
+            presentationMode.wrappedValue.dismiss()
+        }
     }
     
 }

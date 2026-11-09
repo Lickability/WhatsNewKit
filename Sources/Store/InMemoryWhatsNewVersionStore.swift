@@ -1,9 +1,10 @@
 import Foundation
+import os
 
 // MARK: - InMemoryWhatsNewVersionStore
 
 /// The InMemoryWhatsNewVersionStore
-public final class InMemoryWhatsNewVersionStore {
+public final class InMemoryWhatsNewVersionStore: Sendable {
     
     // MARK: Static-Properties
     
@@ -13,14 +14,18 @@ public final class InMemoryWhatsNewVersionStore {
     // MARK: Properties
     
     /// The Versions
-    public var versions: Set<WhatsNew.Version>
+    /// Reading returns a snapshot; assigning replaces the stored versions.
+    public var versions: Set<WhatsNew.Version> {
+        get { storage.withLock { $0 } }
+        set { storage.withLock { $0 = newValue } }
+    }
+
+    private let storage = OSAllocatedUnfairLock(initialState: Set<WhatsNew.Version>())
     
     // MARK: Initializer
     
     /// Creates a new instance of `InMemoryWhatsNewVersionStore`
-    public init() {
-        self.versions = .init()
-    }
+    public init() {}
     
 }
 
@@ -33,7 +38,7 @@ extension InMemoryWhatsNewVersionStore: WriteableWhatsNewVersionStore {
     public func save(
         presentedVersion version: WhatsNew.Version
     ) {
-        self.versions.insert(version)
+        self.storage.withLock { _ = $0.insert(version) }
     }
     
 }
@@ -58,7 +63,7 @@ public extension InMemoryWhatsNewVersionStore {
     func remove(
         presentedVersion version: WhatsNew.Version
     ) {
-        self.versions.remove(version)
+        self.storage.withLock { _ = $0.remove(version) }
     }
     
 }
@@ -69,7 +74,7 @@ public extension InMemoryWhatsNewVersionStore {
     
     /// Remove all presented WhatsNew Versions
     func removeAll() {
-        self.versions.removeAll()
+        self.storage.withLock { $0.removeAll() }
     }
     
 }

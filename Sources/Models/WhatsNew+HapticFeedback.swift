@@ -31,6 +31,7 @@ public extension WhatsNew {
 public extension WhatsNew.HapticFeedback {
     
     /// Call HapticFeedback as function to execute the HapticFeedback
+    @MainActor
     func callAsFunction() {
         #if os(iOS) && !os(visionOS)
         switch self {

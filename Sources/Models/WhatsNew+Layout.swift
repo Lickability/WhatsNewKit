@@ -1,11 +1,12 @@
 import SwiftUI
+import os
 
 // MARK: - WhatsNew+Layout
 
 public extension WhatsNew {
     
     /// The WhatsNew Layout
-    struct Layout {
+    struct Layout: Sendable {
         
         // MARK: Properties
 
@@ -103,7 +104,12 @@ public extension WhatsNew {
 public extension WhatsNew.Layout {
     
     /// The mutable default Layout
-    static var `default` = Self()
+    static var `default`: Self {
+        get { defaultStorage.withLock { $0 } }
+        set { defaultStorage.withLock { $0 = newValue } }
+    }
+
+    private static let defaultStorage = OSAllocatedUnfairLock(initialState: Self())
     
 }
 
