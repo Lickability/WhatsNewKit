@@ -96,7 +96,7 @@ extension WhatsNewView: View {
                     )
             }
             #if os(iOS)
-            .alwaysBounceVertical(false)
+            .scrollBounceBehavior(.basedOnSize, axes: .vertical)
             #endif
             // Footer
             VStack {
@@ -273,7 +273,7 @@ private extension WhatsNewView {
     
 }
 
-#Preview {
+#Preview("Short content") {
     WhatsNewView(
         whatsNew: WhatsNew(
             title: "What's New",
@@ -286,4 +286,20 @@ private extension WhatsNewView {
             ]
         )
     )
+}
+
+#Preview("Scrolling content at accessibility size") {
+    WhatsNewView(
+        whatsNew: WhatsNew(
+            title: "What's New",
+            features: (1...8).map { index in
+                .init(
+                    image: .init(systemName: "star.fill"),
+                    title: .init("Feature \(index)"),
+                    subtitle: "Discover the latest improvements, with longer descriptions that remain readable at larger text sizes."
+                )
+            }
+        )
+    )
+    .dynamicTypeSize(.accessibility3)
 }
