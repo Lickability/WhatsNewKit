@@ -1,5 +1,4 @@
 import SwiftUI
-import os
 
 // MARK: - WhatsNew+Layout
 
@@ -103,13 +102,8 @@ public extension WhatsNew {
 
 public extension WhatsNew.Layout {
     
-    /// The mutable default Layout
-    static var `default`: Self {
-        get { defaultStorage.withLock { $0 } }
-        set { defaultStorage.withLock { $0 = newValue } }
-    }
-
-    private static let defaultStorage = OSAllocatedUnfairLock(initialState: Self())
+    /// The standard layout. Pass a customized copy to a view or environment.
+    static let `default` = Self()
     
 }
 

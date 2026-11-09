@@ -22,31 +22,16 @@ final class WhatsNewVersionStoreTests: WhatsNewKitTestCase {
         )
     }
     
-    func testConcurrentInMemorySavesDoNotLoseVersions() {
-        let store = InMemoryWhatsNewVersionStore()
-        DispatchQueue.concurrentPerform(iterations: 1_000) { index in
-            store.save(presentedVersion: .init(major: index, minor: 0, patch: 0))
-        }
-        let expected = Set((0..<1_000).map {
-            WhatsNew.Version(major: $0, minor: 0, patch: 0)
-        })
-        XCTAssertEqual(store.versions, expected)
-
-        DispatchQueue.concurrentPerform(iterations: 500) { index in
-            store.remove(presentedVersion: .init(major: index, minor: 0, patch: 0))
-        }
-        XCTAssertEqual(store.versions, expected.filter { $0.major >= 500 })
-    }
-
-    func testInMemoryVersionSnapshotsAndReplacement() {
-        let store = InMemoryWhatsNewVersionStore()
-        store.versions = ["1.0.0"]
-        let snapshot = store.versions
-        store.save(presentedVersion: "2.0.0")
-        XCTAssertEqual(snapshot, ["1.0.0"])
-        XCTAssertEqual(store.versions, ["1.0.0", "2.0.0"])
-        store.versions = ["3.0.0"]
-        XCTAssertEqual(store.presentedVersions, ["3.0.0"])
+    @MainActor
+    func testSharedStoreCanBeUsedSynchronouslyOnMainActor() {
+        let store = InMemoryWhatsNewVersionStore.shared
+        let original = store.versions
+        defer { store.versions = original }
+        store.removeAll()
+        store.save(presentedVersion: "1.0.0")
+        XCTAssertTrue(InMemoryWhatsNewVersionStore.shared.hasPresented("1.0.0"))
+        store.remove(presentedVersion: "1.0.0")
+        XCTAssertTrue(store.presentedVersions.isEmpty)
     }
 
     func testUserDefaultsWhatsNewVersionStore() {

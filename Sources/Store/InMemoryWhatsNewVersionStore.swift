@@ -1,31 +1,27 @@
 import Foundation
-import os
 
 // MARK: - InMemoryWhatsNewVersionStore
 
 /// The InMemoryWhatsNewVersionStore
-public final class InMemoryWhatsNewVersionStore: Sendable {
+public final class InMemoryWhatsNewVersionStore {
     
     // MARK: Static-Properties
     
-    /// The shared `InMemoryWhatsNewVersionStore` instance
+    /// The shared instance belongs to the main actor. Create a local store for other contexts.
+    @MainActor
     public static let shared = InMemoryWhatsNewVersionStore()
     
     // MARK: Properties
     
     /// The Versions
-    /// Reading returns a snapshot; assigning replaces the stored versions.
-    public var versions: Set<WhatsNew.Version> {
-        get { storage.withLock { $0 } }
-        set { storage.withLock { $0 = newValue } }
-    }
-
-    private let storage = OSAllocatedUnfairLock(initialState: Set<WhatsNew.Version>())
+    public var versions: Set<WhatsNew.Version>
     
     // MARK: Initializer
     
     /// Creates a new instance of `InMemoryWhatsNewVersionStore`
-    public init() {}
+    public init() {
+        self.versions = .init()
+    }
     
 }
 
@@ -38,7 +34,7 @@ extension InMemoryWhatsNewVersionStore: WriteableWhatsNewVersionStore {
     public func save(
         presentedVersion version: WhatsNew.Version
     ) {
-        self.storage.withLock { _ = $0.insert(version) }
+        self.versions.insert(version)
     }
     
 }
@@ -63,7 +59,7 @@ public extension InMemoryWhatsNewVersionStore {
     func remove(
         presentedVersion version: WhatsNew.Version
     ) {
-        self.storage.withLock { _ = $0.remove(version) }
+        self.versions.remove(version)
     }
     
 }
@@ -74,7 +70,7 @@ public extension InMemoryWhatsNewVersionStore {
     
     /// Remove all presented WhatsNew Versions
     func removeAll() {
-        self.storage.withLock { $0.removeAll() }
+        self.versions.removeAll()
     }
     
 }
