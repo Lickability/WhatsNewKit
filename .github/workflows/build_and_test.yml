@@ -18,31 +18,37 @@ on:
 permissions:
   contents: read
 
-env:
-  DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
-
 jobs:
   iOS:
     name: Build and test on iOS
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest
       - name: Test
-        run: xcodebuild test -scheme WhatsNewKit -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
+        run: xcodebuild test -scheme WhatsNewKit -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
   macOS:
     name: Build and test on macOS
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest
       - name: Test
         run: swift test
   visionOS:
     name: Build on visionOS
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest
       - name: Build
         run: xcodebuild build -scheme WhatsNewKit -destination 'generic/platform=visionOS Simulator' CODE_SIGNING_ALLOWED=NO

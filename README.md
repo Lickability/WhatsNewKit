@@ -64,22 +64,22 @@ struct ContentView: View {
 
 ## Requirements
 
-- iOS 26 or later, macOS 11 or later, or visionOS 1 or later.
-- Xcode 26 or later for iOS development. The package continues to use Swift 5 language mode.
+- iOS 26 or later, macOS 26 or later, or visionOS 1 or later.
+- Xcode 26 or later for iOS and macOS development. The package continues to use Swift 5 language mode.
 
-This raises the minimum supported iOS version from iOS 13 to iOS 26. Applications supporting earlier iOS versions must remain on an earlier release.
+This raises the minimum supported versions from iOS 13 to iOS 26 and from macOS 11 to macOS 26. Applications supporting earlier systems must remain on an earlier release.
 
 ## Development
 
-CI uses the `macos-26` runner with Xcode 26.6 selected explicitly. It runs the package tests on iOS 26.5 and macOS, builds the package for visionOS, and builds the example for all three platforms. Package and workflow changes trigger these checks.
+CI uses the `xcode-27` runner and selects the latest installed Xcode with `setup-xcode` (`latest`, including beta releases). It runs the package tests on the latest installed iOS runtime and macOS, builds the package for visionOS, and builds the example for all three platforms. Package and workflow changes trigger these checks.
 
 Run the macOS package tests with `swift test`. To run iOS tests locally, choose an installed iOS 26 or newer simulator:
 
 ```sh
-xcodebuild test -scheme WhatsNewKit -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
+xcodebuild test -scheme WhatsNewKit -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
 ```
 
-The example requires iOS 26, macOS 14, or visionOS 1. Open `Example/Example.xcodeproj` and select the `Example` scheme.
+The example requires iOS 26, macOS 26, or visionOS 1. Open `Example/Example.xcodeproj` and select the `Example` scheme.
 
 ## Installation
 

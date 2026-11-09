@@ -6,7 +6,7 @@ let package = Package(
     name: "WhatsNewKit",
     platforms: [
         .iOS("26.0"),
-        .macOS(.v11),
+        .macOS("26.0"),
         .visionOS(.v1)
     ],
     products: [
