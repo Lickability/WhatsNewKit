@@ -342,8 +342,7 @@ let whatsnew = WhatsNew(
     // The primary action that is used to dismiss the WhatsNewView
     primaryAction: WhatsNew.PrimaryAction(
         title: "Continue",
-        backgroundColor: .accentColor,
-        foregroundColor: .white,
+        tint: .accentColor,
         hapticFeedback: .notification(.success),
         onDismiss: {
             print("WhatsNewView has been dismissed")
@@ -427,8 +426,7 @@ The `WhatsNew.PrimaryAction` allows you to configure the behaviour of the primar
 ```swift
 let primaryAction = WhatsNew.PrimaryAction(
     title: "Continue",
-    backgroundColor: .blue,
-    foregroundColor: .white,
+    tint: .blue,
     hapticFeedback: .notification(.success),
     onDismiss: {
         print("WhatsNewView has been dismissed")
@@ -437,6 +435,18 @@ let primaryAction = WhatsNew.PrimaryAction(
 ```
 
 > Note: HapticFeedback will only be executed on iOS
+
+### WhatsNew.Notice
+
+Add optional supplemental text, such as a privacy notice, below the features. Short notices sit near the bottom of the content; longer notices scroll so they remain readable at accessibility text sizes. Attributed text can include links.
+
+```swift
+let notice = WhatsNew.Notice(
+    image: .init(systemName: "hand.raised.fill", foregroundColor: .blue),
+    text: .init(try AttributedString(markdown: "Learn how we handle your information in our [privacy policy](https://example.com/privacy)."))
+)
+// Pass notice: notice to WhatsNew's initializer.
+```
 
 ### WhatsNew.SecondaryAction
 
@@ -490,6 +500,18 @@ When embedding `WhatsNewView` directly or using `WhatsNewViewController`, versio
 ## Layout
 
 WhatsNewKit allows you to adjust the layout of a presented `WhatsNewView` in various ways.
+
+The default presentation uses a compact leading title, top-aligned feature symbols, and a native capsule action. Content and actions share a maximum readable width of 560 points, including 32-point horizontal padding. The bottom action bar reserves its own space with `safeAreaBar` on iOS 26, macOS 26, and visionOS 26; visionOS 1–2 use `safeAreaInset`. The primary button uses the native prominent glass style on iOS and macOS and the native bordered prominent style on visionOS.
+
+### Migrating from the previous design
+
+This redesign changes the public styling API:
+
+- Replace `PrimaryAction(backgroundColor:foregroundColor:)` with `PrimaryAction(tint:)`. SwiftUI supplies the button's foreground, shape, and pressed appearance.
+- Use `contentPadding` for the title and feature content, and `footerPadding` for the actions. `featureListPadding` and `footerVisualEffectViewPadding` are removed.
+- `scrollViewBottomContentInset` is removed: the bottom bar reserves space automatically.
+- `featureHorizontalAlignment` and `footerPrimaryActionButtonCornerRadius` are removed. Feature icons are top aligned and the primary action is a native capsule.
+- Use `maximumContentWidth` to constrain the presentation on wider windows and `featureImageWidth` to size the icon column.
 
 Create a layout, then pass it to the environment or an individual presentation. The standard `WhatsNew.Layout.default` is immutable.
 

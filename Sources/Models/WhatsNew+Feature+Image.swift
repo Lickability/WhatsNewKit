@@ -65,7 +65,7 @@ public extension WhatsNew.Feature.Image {
             )
             .renderingMode(renderingMode)
             .font(.title)
-            .imageScale(.large)
+            .imageScale(.medium)
             .foregroundColor(foregroundColor)
         }
     }
@@ -92,7 +92,7 @@ public extension WhatsNew.Feature.Image {
             )
             .renderingMode(renderingMode)
             .font(.title)
-            .imageScale(.large)
+            .imageScale(.medium)
             .foregroundColor(foregroundColor)
         }
     }
@@ -117,7 +117,7 @@ public extension WhatsNew.Feature.Image {
             .renderingMode(renderingMode)
             .symbolRenderingMode(symbolRenderingMode)
             .font(.title)
-            .imageScale(.large)
+            .imageScale(.medium)
             .foregroundColor(foregroundColor)
         }
     }

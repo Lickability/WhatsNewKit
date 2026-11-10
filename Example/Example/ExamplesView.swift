@@ -60,8 +60,8 @@ private extension WhatsNew {
     
     /// A WhatsNew Example
     enum Example: String, Codable, Hashable, CaseIterable {
-        /// Calendar
-        case calendar
+        /// Shortcuts
+        case shortcuts
         /// Maps
         case maps
         /// Translate
@@ -88,38 +88,29 @@ private extension WhatsNew.Example {
     /// The WhatsNew
     var whatsNew: WhatsNew {
         switch self {
-        case .calendar:
+        // Reference: Apple's Shortcuts welcome screen in iOS 27 beta 5.
+        // https://forum.betaprofiles.com/t/whats-new-in-ios-27-beta-5/23226
+        case .shortcuts:
             return .init(
-                title: "What's New in Calendar",
+                title: "What’s New in Shortcuts",
                 features: [
                     .init(
-                        image: .init(
-                            systemName: "envelope",
-                            foregroundColor: .red
-                        ),
-                        title: "Found Events",
-                        subtitle: "Siri suggests events found in Mail, Messages, and Safari, so you can add them easily, such as flight reservations and hotel bookings."
+                        image: .init(systemName: "apple.intelligence", foregroundColor: .blue),
+                        title: "Describe a Shortcut",
+                        subtitle: "Describe what you want to do and Shortcuts will assemble all the actions for you. All of your shortcuts are summarized automatically using Apple Intelligence."
                     ),
                     .init(
-                        image: .init(
-                            systemName: "clock",
-                            foregroundColor: .red
-                        ),
-                        title: "Time to Leave",
-                        subtitle: "Calendar uses Apple Maps to look up locations, traffic conditions, and transit options to tell you when it's time to leave."
+                        image: .init(systemName: "magnifyingglass", foregroundColor: .blue),
+                        title: "Broad World Knowledge",
+                        subtitle: "The Use Model action can now get up-to-date information on anything in your shortcut using the web."
                     ),
                     .init(
-                        image: .init(
-                            systemName: "location",
-                            foregroundColor: .red
-                        ),
-                        title: "Location Suggestions",
-                        subtitle: "Calendar suggests locations based on your past events and significant locations."
+                        image: .init(systemName: "clock.badge.checkmark", foregroundColor: .blue),
+                        title: "Unified Automations",
+                        subtitle: "Automations are now built directly into your shortcuts, including the ones you share. To create an automation, tap the Add button."
                     )
                 ],
-                primaryAction: .init(
-                    backgroundColor: .red
-                )
+                primaryAction: .init(tint: .blue)
             )
         case .maps:
             return .init(
@@ -150,7 +141,7 @@ private extension WhatsNew.Example {
                         subtitle: "Finding places is now easier with filters and automatic updates when you're browsing results on the map."
                     )
                 ],
-                primaryAction: .init(backgroundColor: .blue),
+                primaryAction: .init(tint: .blue),
                 secondaryAction: .init(
                     title: "About Apple Maps & Privacy",
                     foregroundColor: .blue,
@@ -195,7 +186,7 @@ private extension WhatsNew.Example {
                     )
                 ],
                 primaryAction: .init(
-                    backgroundColor: .cyan
+                    tint: .cyan
                 ),
                 secondaryAction: .init(
                     title: "About Translation & Privacy",
@@ -224,4 +215,8 @@ private extension AttributeContainer {
         return container
     }
     
+}
+
+#Preview {
+    NavigationStack { ExamplesView() }
 }

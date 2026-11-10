@@ -11,8 +11,8 @@ final class WhatsNewEnvironmentTests: WhatsNewKitTestCase {
         layout.featureListSpacing = 42
         let environment = WhatsNewEnvironment(defaultLayout: layout)
         XCTAssertEqual(environment.defaultLayout.featureListSpacing, 42)
-        XCTAssertEqual(WhatsNewEnvironment().defaultLayout.featureListSpacing, 25)
-        XCTAssertEqual(WhatsNew.Layout.default.featureListSpacing, 25)
+        XCTAssertEqual(WhatsNewEnvironment().defaultLayout.featureListSpacing, 24)
+        XCTAssertEqual(WhatsNew.Layout.default.featureListSpacing, 24)
     }
 
     func testEnvironmentDefaultsAreIndependent() {
