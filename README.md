@@ -503,7 +503,7 @@ When embedding `WhatsNewView` directly or using `WhatsNewViewController`, versio
 
 WhatsNewKit allows you to adjust the layout of a presented `WhatsNewView` in various ways.
 
-The default presentation uses a compact leading title, top-aligned feature symbols, and a native capsule action. Content and actions share a maximum readable width of 560 points, including 32-point horizontal padding. The bottom action bar reserves its own space with `safeAreaBar` on all supported platforms. The primary button uses the native prominent glass style on iOS and macOS and the native bordered prominent style on visionOS.
+The default presentation uses a compact leading title, top-aligned feature symbols, and a native capsule action. Content and actions fill the available width with 32-point horizontal padding. On macOS, sheets start at an ideal size of 560 × 640 points and remain resizable through native fitted presentation sizing. The bottom action bar reserves its own space with `safeAreaBar` on all supported platforms. The primary button uses the native prominent glass style on iOS and macOS and the native bordered prominent style on visionOS.
 
 Typography uses public SwiftUI semantic styles: Title 2 bold for the compact heading, Body semibold for feature titles with descriptions and the primary action, and Body regular for descriptions and title-only features. The primary button has a 44-point minimum height and grows with its content. Only the primary action caps Dynamic Type at `.accessibility4`; the rest of the content continues through `.accessibility5`. The fonts and scaling follow the measured standard OnBoardingKit configuration on iOS 27.2; the 44-point button minimum is a deliberate visual adjustment from its measured 52-point minimum. Other platforms use their native semantic font metrics. Supplemental notices retain their separate caption styling.
 
@@ -515,7 +515,7 @@ This redesign changes the public styling API:
 - Use `contentPadding` for the title and feature content, and `footerPadding` for the actions. `featureListPadding` and `footerVisualEffectViewPadding` are removed.
 - `scrollViewBottomContentInset` is removed: the bottom bar reserves space automatically.
 - `featureHorizontalAlignment` and `footerPrimaryActionButtonCornerRadius` are removed. Feature icons are top aligned and the primary action is a native capsule.
-- Use `maximumContentWidth` to constrain the presentation on wider windows and `featureImageWidth` to size the icon column.
+- Use `featureImageWidth` to size the icon column.
 
 Create a layout, then pass it to the environment or an individual presentation. The standard `WhatsNew.Layout.default` is immutable.
 

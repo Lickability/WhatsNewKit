@@ -1,11 +1,9 @@
 import SwiftUI
 
 public extension WhatsNew {
-    /// Spacing and readable width for the native release-notes presentation.
+    /// Spacing for the native release-notes presentation.
     struct Layout: Sendable {
         public var showsScrollViewIndicators: Bool
-        /// Maximum width of the content and actions, including their padding.
-        public var maximumContentWidth: CGFloat
         public var contentSpacing: CGFloat
         public var contentPadding: EdgeInsets
         public var featureListSpacing: CGFloat
@@ -17,7 +15,6 @@ public extension WhatsNew {
 
         public init(
             showsScrollViewIndicators: Bool = false,
-            maximumContentWidth: CGFloat = 560,
             contentSpacing: CGFloat = 24,
             contentPadding: EdgeInsets = .init(top: 76, leading: 32, bottom: 24, trailing: 32),
             featureListSpacing: CGFloat = 24,
@@ -28,7 +25,6 @@ public extension WhatsNew {
             footerPadding: EdgeInsets = .init(top: 16, leading: 32, bottom: 0, trailing: 32)
         ) {
             self.showsScrollViewIndicators = showsScrollViewIndicators
-            self.maximumContentWidth = maximumContentWidth
             self.contentSpacing = contentSpacing
             self.contentPadding = contentPadding
             self.featureListSpacing = featureListSpacing

@@ -58,6 +58,10 @@ public struct WhatsNewView {
 extension WhatsNewView: View {
     public var body: some View {
         presentation
+            #if os(macOS)
+            .frame(idealWidth: 560, idealHeight: 640)
+            .presentationSizing(.fitted)
+            #endif
             .sheet(item: $secondaryActionPresentedView) { $0.view }
             .onChange(of: isPresented) { wasPresented, isPresented in
                 if wasPresented && !isPresented {
@@ -103,7 +107,6 @@ private extension WhatsNewView {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(layout.contentPadding)
                 .frame(minHeight: geometry.size.height, alignment: .top)
-                .frame(maxWidth: layout.maximumContentWidth)
                 .frame(maxWidth: .infinity)
             }
             .scrollBounceBehavior(.basedOnSize, axes: .vertical)
@@ -162,7 +165,6 @@ private extension WhatsNewView {
         #if os(macOS) || os(visionOS)
         .padding(.bottom, 16)
         #endif
-        .frame(maxWidth: layout.maximumContentWidth)
         .frame(maxWidth: .infinity)
     }
 
@@ -216,7 +218,7 @@ private extension WhatsNewView {
     }
 }
 
-#Preview("Short content with 44-point action") {
+#Preview("Wide presentation with 44-point action", traits: .fixedLayout(width: 800, height: 700)) {
     WhatsNewView(
         whatsNew: WhatsNew(
             title: "What's New",
