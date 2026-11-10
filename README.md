@@ -419,6 +419,8 @@ let feature = WhatsNew.Feature(
 )
 ```
 
+Omit `subtitle` (or pass `nil` or empty text) for a title-only feature. It uses regular Body text; a feature with a description uses a semibold Body title and regular Body description.
+
 ### WhatsNew.PrimaryAction
 
 The `WhatsNew.PrimaryAction` allows you to configure the behaviour of the primary button which is used to dismiss the presented `WhatsNewView`
@@ -502,6 +504,8 @@ When embedding `WhatsNewView` directly or using `WhatsNewViewController`, versio
 WhatsNewKit allows you to adjust the layout of a presented `WhatsNewView` in various ways.
 
 The default presentation uses a compact leading title, top-aligned feature symbols, and a native capsule action. Content and actions share a maximum readable width of 560 points, including 32-point horizontal padding. The bottom action bar reserves its own space with `safeAreaBar` on all supported platforms. The primary button uses the native prominent glass style on iOS and macOS and the native bordered prominent style on visionOS.
+
+Typography uses public SwiftUI semantic styles: Title 2 bold for the compact heading, Body semibold for feature titles with descriptions and the primary action, and Body regular for descriptions and title-only features. The primary button has a 52-point minimum height and grows with its content. Only the primary action caps Dynamic Type at `.accessibility4`; the rest of the content continues through `.accessibility5`. These choices follow the measured standard OnBoardingKit configuration on iOS 27.2. Other platforms use their native semantic font metrics. Supplemental notices retain their separate caption styling.
 
 ### Migrating from the previous design
 

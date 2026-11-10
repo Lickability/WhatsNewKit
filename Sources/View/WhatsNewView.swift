@@ -88,7 +88,7 @@ private extension WhatsNewView {
                 VStack(alignment: .leading, spacing: 0) {
                     VStack(alignment: .leading, spacing: layout.contentSpacing) {
                         Text(whatsNewText: whatsNew.title.text)
-                            .font(.title3.bold())
+                            .font(.title2.bold())
                             .foregroundStyle(whatsNew.title.foregroundColor)
                             .accessibilityAddTraits(.isHeader)
                         VStack(alignment: .leading, spacing: layout.featureListSpacing) {
@@ -111,18 +111,20 @@ private extension WhatsNewView {
     }
 
     func feature(_ feature: WhatsNew.Feature) -> some View {
-        HStack(alignment: .top, spacing: layout.featureHorizontalSpacing) {
+        let hasSubtitle = (feature.subtitle?.attributedString.length ?? 0) > 0
+        return HStack(alignment: .top, spacing: layout.featureHorizontalSpacing) {
             feature.image.view()
                 .frame(width: layout.featureImageWidth)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: layout.featureVerticalSpacing) {
                 Text(whatsNewText: feature.title)
-                    .font(.callout.weight(.semibold))
+                    .font(.body.weight(hasSubtitle ? .semibold : .regular))
                     .foregroundStyle(.primary)
-                Text(whatsNewText: feature.subtitle)
-                    .font(.subheadline)
-                    .lineSpacing(2)
-                    .foregroundStyle(.secondary)
+                if hasSubtitle, let subtitle = feature.subtitle {
+                    Text(whatsNewText: subtitle)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -173,7 +175,7 @@ private extension WhatsNewView {
             Text(whatsNewText: whatsNew.primaryAction.title)
                 .font(.body.weight(.semibold))
                 .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .controlSize(.large)
         .buttonBorderShape(.capsule)
@@ -184,7 +186,12 @@ private extension WhatsNewView {
         .buttonStyle(.glassProminent)
         .buttonSizing(.flexible)
         #endif
+        .frame(minHeight: 52)
+        // Let the label fill the minimum height without stretching the bottom bar.
+        .fixedSize(horizontal: false, vertical: true)
         .keyboardShortcut(.defaultAction)
+        // Cap only the primary control; feature text continues through accessibility5.
+        .dynamicTypeSize(...DynamicTypeSize.accessibility4)
     }
 
     func perform(_ action: WhatsNew.SecondaryAction.Action) {
@@ -218,6 +225,15 @@ private extension WhatsNewView {
                     image: .init(systemName: "star.fill"),
                     title: "A new feature",
                     subtitle: "Discover the latest improvements."
+                ),
+                .init(
+                    image: .init(systemName: "checkmark.circle"),
+                    title: "A feature without a description"
+                ),
+                .init(
+                    image: .init(systemName: "checkmark.circle"),
+                    title: "An empty description is also omitted",
+                    subtitle: ""
                 )
             ],
             notice: .init(
@@ -228,7 +244,7 @@ private extension WhatsNewView {
     )
 }
 
-#Preview("Scrolling content at accessibility size") {
+#Preview("Scrolling content at largest accessibility size") {
     WhatsNewView(
         whatsNew: WhatsNew(
             title: "What's New",
@@ -241,5 +257,21 @@ private extension WhatsNewView {
             }
         )
     )
-    .dynamicTypeSize(.accessibility3)
+    .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("Title-only feature at largest accessibility size") {
+    WhatsNewView(
+        whatsNew: .init(
+            title: "What's New",
+            features: [
+                .init(
+                    image: .init(systemName: "checkmark.circle"),
+                    title: "A feature without a description"
+                )
+            ],
+            primaryAction: .init(title: "Continue to the next step")
+        )
+    )
+    .dynamicTypeSize(.accessibility5)
 }
