@@ -64,10 +64,10 @@ struct ContentView: View {
 
 ## Requirements
 
-- iOS 26 or later, macOS 26 or later, or visionOS 1 or later.
-- Xcode 26 or later for iOS and macOS development. The package and example use Swift 6 language mode (Swift tools 6.0 or later).
+- iOS 26 or later, macOS 26 or later, or visionOS 26 or later.
+- Xcode 26 or later. The package and example use Swift 6 language mode (Swift tools 6.0 or later).
 
-This raises the minimum supported versions from iOS 13 to iOS 26 and from macOS 11 to macOS 26. Applications supporting earlier systems must remain on an earlier release.
+This raises the minimum supported versions from iOS 13 to iOS 26, macOS 11 to macOS 26, and visionOS 1 to visionOS 26. Applications supporting earlier systems must remain on an earlier release.
 
 ## Swift 6 migration
 
@@ -89,7 +89,7 @@ Run the macOS package tests with `swift test`. To run iOS tests locally, choose 
 xcodebuild test -scheme WhatsNewKit -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
 ```
 
-The example requires iOS 26, macOS 26, or visionOS 1. Open `Example/Example.xcodeproj` and select the `Example` scheme.
+The example requires iOS 26, macOS 26, or visionOS 26. Open `Example/Example.xcodeproj` and select the `Example` scheme.
 
 ## Installation
 
@@ -501,7 +501,7 @@ When embedding `WhatsNewView` directly or using `WhatsNewViewController`, versio
 
 WhatsNewKit allows you to adjust the layout of a presented `WhatsNewView` in various ways.
 
-The default presentation uses a compact leading title, top-aligned feature symbols, and a native capsule action. Content and actions share a maximum readable width of 560 points, including 32-point horizontal padding. The bottom action bar reserves its own space with `safeAreaBar` on iOS 26, macOS 26, and visionOS 26; visionOS 1–2 use `safeAreaInset`. The primary button uses the native prominent glass style on iOS and macOS and the native bordered prominent style on visionOS.
+The default presentation uses a compact leading title, top-aligned feature symbols, and a native capsule action. Content and actions share a maximum readable width of 560 points, including 32-point horizontal padding. The bottom action bar reserves its own space with `safeAreaBar` on all supported platforms. The primary button uses the native prominent glass style on iOS and macOS and the native bordered prominent style on visionOS.
 
 ### Migrating from the previous design
 

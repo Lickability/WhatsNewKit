@@ -74,18 +74,12 @@ extension WhatsNewView: View {
 }
 
 private extension WhatsNewView {
-    @ViewBuilder
     var presentation: some View {
-        if #available(iOS 26, macOS 26, visionOS 26, *) {
-            scrollContent
-                .safeAreaBar(edge: .bottom, spacing: 0) { footer }
-                #if !os(visionOS)
-                .scrollEdgeEffectStyle(.soft, for: .bottom)
-                #endif
-        } else {
-            // visionOS 1–2 still use their native inset and button style.
-            scrollContent.safeAreaInset(edge: .bottom, spacing: 0) { footer }
-        }
+        scrollContent
+            .safeAreaBar(edge: .bottom, spacing: 0) { footer }
+            #if !os(visionOS)
+            .scrollEdgeEffectStyle(.soft, for: .bottom)
+            #endif
     }
 
     var scrollContent: some View {
@@ -217,7 +211,7 @@ private extension WhatsNewView {
     }
 }
 
-#Preview("Short content") {
+#Preview("Short content with notice") {
     WhatsNewView(
         whatsNew: WhatsNew(
             title: "What's New",
