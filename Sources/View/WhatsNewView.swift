@@ -184,9 +184,7 @@ private extension WhatsNewView {
         .buttonStyle(.glassProminent)
         .buttonSizing(.flexible)
         #endif
-        #if os(macOS)
         .keyboardShortcut(.defaultAction)
-        #endif
     }
 
     func perform(_ action: WhatsNew.SecondaryAction.Action) {
