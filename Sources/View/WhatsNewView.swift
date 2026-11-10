@@ -177,7 +177,7 @@ private extension WhatsNewView {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .controlSize(.large)
+        .controlSize(.regular)
         .buttonBorderShape(.capsule)
         .tint(whatsNew.primaryAction.tint)
         #if os(visionOS)
@@ -186,7 +186,7 @@ private extension WhatsNewView {
         .buttonStyle(.glassProminent)
         .buttonSizing(.flexible)
         #endif
-        .frame(minHeight: 52)
+        .frame(minHeight: 44)
         // Let the label fill the minimum height without stretching the bottom bar.
         .fixedSize(horizontal: false, vertical: true)
         .keyboardShortcut(.defaultAction)
@@ -216,7 +216,7 @@ private extension WhatsNewView {
     }
 }
 
-#Preview("Short content with notice") {
+#Preview("Short content with 44-point action") {
     WhatsNewView(
         whatsNew: WhatsNew(
             title: "What's New",
