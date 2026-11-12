@@ -56,85 +56,161 @@ public struct WhatsNewView {
 // MARK: - View
 
 extension WhatsNewView: View {
-    
-    /// The content and behavior of the view.
     public var body: some View {
-        ZStack {
-            // Content ScrollView
-            ScrollView(
-                .vertical,
-                showsIndicators: self.layout.showsScrollViewIndicators
-            ) {
-                // Content Stack
-                VStack(
-                    spacing: self.layout.contentSpacing
-                ) {
-                    // Title
-                    self.title
-                    // Feature List
-                    VStack(
-                        alignment: .leading,
-                        spacing: self.layout.featureListSpacing
-                    ) {
-                        // Feature
-                        ForEach(
-                            self.whatsNew.features,
-                            id: \.self,
-                            content: self.feature
-                        )
-                    }
-                    .modifier(FeaturesPadding())
-                    .padding(self.layout.featureListPadding)
-                }
-                .padding(.horizontal)
-                .padding(self.layout.contentPadding)
-                // ScrollView bottom content inset
-                Color.clear
-                    .padding(
-                        .bottom,
-                        self.layout.scrollViewBottomContentInset
-                    )
-            }
-            #if os(iOS)
-            .scrollBounceBehavior(.basedOnSize, axes: .vertical)
+        presentation
+            #if os(macOS)
+            .frame(idealWidth: 560, idealHeight: 640)
+            .presentationSizing(.fitted)
             #endif
-            // Footer
-            VStack {
-                Spacer()
-                self.footer
-                    .modifier(FooterPadding())
-                    #if os(iOS)
-                    .background(
-                        UIVisualEffectView
-                            .Representable()
-                            .edgesIgnoringSafeArea(.horizontal)
-                            .padding(self.layout.footerVisualEffectViewPadding)
-                    )
-                    #endif
+            .sheet(item: $secondaryActionPresentedView) { $0.view }
+            .onChange(of: isPresented) { wasPresented, isPresented in
+                if wasPresented && !isPresented {
+                    recordPresentedVersion()
+                }
             }
-            .edgesIgnoringSafeArea(.bottom)
-        }
-        .sheet(
-            item: self.$secondaryActionPresentedView,
-            content: { $0.view }
-        )
-        .onChange(of: isPresented) { wasPresented, isPresented in
-            if wasPresented && !isPresented {
-                self.recordPresentedVersion()
+            .onDisappear {
+                // Ignore temporary disappearance behind the secondary sheet.
+                if secondaryActionPresentedView == nil {
+                    recordPresentedVersion()
+                }
             }
-        }
-        .onDisappear {
-            // Managed sheets record at their outer onDismiss. For a directly hosted
-            // view, ignore temporary disappearance behind its secondary sheet.
-            if self.secondaryActionPresentedView == nil {
-                self.recordPresentedVersion()
-            }
-        }
     }
-    
 }
 
 private extension WhatsNewView {
+    var presentation: some View {
+        scrollContent
+            .safeAreaBar(edge: .bottom, spacing: 0) { footer }
+            #if !os(visionOS)
+            .scrollEdgeEffectStyle(.soft, for: .bottom)
+            #endif
+    }
+
+    var scrollContent: some View {
+        GeometryReader { geometry in
+            ScrollView(.vertical, showsIndicators: layout.showsScrollViewIndicators) {
+                VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: layout.contentSpacing) {
+                        Text(whatsNewText: whatsNew.title.text)
+                            .font(.title2.bold())
+                            .foregroundStyle(whatsNew.title.foregroundColor)
+                            .accessibilityAddTraits(.isHeader)
+                        VStack(alignment: .leading, spacing: layout.featureListSpacing) {
+                            ForEach(whatsNew.features, id: \.self, content: feature)
+                        }
+                    }
+                    if let notice = whatsNew.notice {
+                        Spacer(minLength: 32)
+                        noticeContent(notice)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(layout.contentPadding)
+                .frame(minHeight: geometry.size.height, alignment: .top)
+                .frame(maxWidth: .infinity)
+            }
+            .scrollBounceBehavior(.basedOnSize, axes: .vertical)
+        }
+    }
+
+    func feature(_ feature: WhatsNew.Feature) -> some View {
+        let hasSubtitle = (feature.subtitle?.attributedString.length ?? 0) > 0
+        return HStack(alignment: .top, spacing: layout.featureHorizontalSpacing) {
+            feature.image.view()
+                .frame(width: layout.featureImageWidth)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: layout.featureVerticalSpacing) {
+                Text(whatsNewText: feature.title)
+                    .font(.body.weight(hasSubtitle ? .semibold : .regular))
+                    .foregroundStyle(.primary)
+                if hasSubtitle, let subtitle = feature.subtitle {
+                    Text(whatsNewText: subtitle)
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    func noticeContent(_ notice: WhatsNew.Notice) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let image = notice.image {
+                image.view().accessibilityHidden(true)
+            }
+            Text(whatsNewText: notice.text)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    var footer: some View {
+        VStack(spacing: layout.footerActionSpacing) {
+            if let secondaryAction = whatsNew.secondaryAction {
+                Button {
+                    secondaryAction.hapticFeedback?()
+                    perform(secondaryAction.action)
+                } label: {
+                    Text(whatsNewText: secondaryAction.title)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(secondaryAction.foregroundColor)
+            }
+            primaryButton
+        }
+        .padding(layout.footerPadding)
+        #if os(macOS) || os(visionOS)
+        .padding(.bottom, 16)
+        #endif
+        .frame(maxWidth: .infinity)
+    }
+
+    var primaryButton: some View {
+        Button {
+            whatsNew.primaryAction.hapticFeedback?()
+            dismiss()
+            whatsNew.primaryAction.onDismiss?()
+        } label: {
+            Text(whatsNewText: whatsNew.primaryAction.title)
+                .font(.body.weight(.semibold))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .controlSize(.regular)
+        .buttonBorderShape(.capsule)
+        .tint(whatsNew.primaryAction.tint)
+        #if os(visionOS)
+        .buttonStyle(.borderedProminent)
+        #else
+        .buttonStyle(.glassProminent)
+        .buttonSizing(.flexible)
+        #endif
+        .frame(minHeight: 44)
+        // Let the label fill the minimum height without stretching the bottom bar.
+        .fixedSize(horizontal: false, vertical: true)
+        .keyboardShortcut(.defaultAction)
+        // Cap only the primary control; feature text continues through accessibility5.
+        .dynamicTypeSize(...DynamicTypeSize.accessibility4)
+    }
+
+    func perform(_ action: WhatsNew.SecondaryAction.Action) {
+        switch action {
+        case .present(let view):
+            secondaryActionPresentedView = .init(view: view)
+        case .perform(let action):
+            action(dismiss)
+        case .dismiss:
+            dismiss()
+        case .openURL(let url):
+            if let url { openURL(url) }
+        case .custom(let action):
+            action(presentationMode)
+        }
+    }
+
     func recordPresentedVersion() {
         guard let whatsNewVersionStore,
               !whatsNewVersionStore.hasPresented(whatsNew.version) else { return }
@@ -142,138 +218,7 @@ private extension WhatsNewView {
     }
 }
 
-// MARK: - Title
-
-private extension WhatsNewView {
-    
-    /// The Title View
-    var title: some View {
-        Text(
-            whatsNewText: self.whatsNew.title.text
-        )
-        .font(.largeTitle.bold())
-        .multilineTextAlignment(.center)
-        .fixedSize(horizontal: false, vertical: true)
-    }
-    
-}
-
-// MARK: - Feature
-
-private extension WhatsNewView {
-    
-    /// The Feature View
-    /// - Parameter feature: A WhatsNew Feature
-    func feature(
-        _ feature: WhatsNew.Feature
-    ) -> some View {
-        HStack(
-            alignment: self.layout.featureHorizontalAlignment,
-            spacing: self.layout.featureHorizontalSpacing
-        ) {
-            feature
-                .image
-                .view()
-                .frame(width: self.layout.featureImageWidth)
-            VStack(
-                alignment: .leading,
-                spacing: self.layout.featureVerticalSpacing
-            ) {
-                Text(
-                    whatsNewText: feature.title
-                )
-                .font(.subheadline.weight(.semibold))
-                .foregroundColor(.primary)
-                .fixedSize(horizontal: false, vertical: true)
-                Text(
-                    whatsNewText: feature.subtitle
-                )
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-            }
-            .multilineTextAlignment(.leading)
-        }.accessibilityElement(children: .combine)
-    }
-    
-}
-
-// MARK: - Footer
-
-private extension WhatsNewView {
-    
-    /// The Footer View
-    var footer: some View {
-        VStack(
-            spacing: self.layout.footerActionSpacing
-        ) {
-            // Check if a secondary action is available
-            if let secondaryAction = self.whatsNew.secondaryAction {
-                // Secondary Action Button
-                Button(
-                    action: {
-                        // Invoke HapticFeedback, if available
-                        secondaryAction.hapticFeedback?()
-                        // Switch on Action
-                        switch secondaryAction.action {
-                        case .present(let view):
-                            // Set secondary action presented view
-                            self.secondaryActionPresentedView = .init(view: view)
-                        case .perform(let action):
-                            action(self.dismiss)
-                        case .dismiss:
-                            self.dismiss()
-                        case .openURL(let url):
-                            if let url {
-                                self.openURL(url)
-                            }
-                        case .custom(let action):
-                            // Invoke action with PresentationMode
-                            action(self.presentationMode)
-                        }
-                    }
-                ) {
-                    Text(
-                        whatsNewText: secondaryAction.title
-                    )
-                }
-                #if os(macOS)
-                .buttonStyle(
-                    PlainButtonStyle()
-                )
-                #endif
-                .foregroundColor(secondaryAction.foregroundColor)
-            }
-            // Primary Action Button
-            Button(
-                action: {
-                    // Invoke HapticFeedback, if available
-                    self.whatsNew.primaryAction.hapticFeedback?()
-                    // Dismiss
-                    self.dismiss()
-                    // Invoke on dismiss, if available
-                    self.whatsNew.primaryAction.onDismiss?()
-                }
-            ) {
-                Text(
-                    whatsNewText: self.whatsNew.primaryAction.title
-                )
-            }
-            .buttonStyle(
-                PrimaryButtonStyle(
-                    primaryAction: self.whatsNew.primaryAction,
-                    layout: self.layout
-                )
-            )
-            #if os(macOS)
-            .keyboardShortcut(.defaultAction)
-            #endif
-        }
-    }
-    
-}
-
-#Preview("Short content") {
+#Preview("Wide presentation with 44-point action", traits: .fixedLayout(width: 800, height: 700)) {
     WhatsNewView(
         whatsNew: WhatsNew(
             title: "What's New",
@@ -282,13 +227,26 @@ private extension WhatsNewView {
                     image: .init(systemName: "star.fill"),
                     title: "A new feature",
                     subtitle: "Discover the latest improvements."
+                ),
+                .init(
+                    image: .init(systemName: "checkmark.circle"),
+                    title: "A feature without a description"
+                ),
+                .init(
+                    image: .init(systemName: "checkmark.circle"),
+                    title: "An empty description is also omitted",
+                    subtitle: ""
                 )
-            ]
+            ],
+            notice: .init(
+                image: .init(systemName: "hand.raised.fill"),
+                text: "Your information stays private. Review your choices in Settings."
+            )
         )
     )
 }
 
-#Preview("Scrolling content at accessibility size") {
+#Preview("Scrolling content at largest accessibility size") {
     WhatsNewView(
         whatsNew: WhatsNew(
             title: "What's New",
@@ -301,5 +259,21 @@ private extension WhatsNewView {
             }
         )
     )
-    .dynamicTypeSize(.accessibility3)
+    .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("Title-only feature at largest accessibility size") {
+    WhatsNewView(
+        whatsNew: .init(
+            title: "What's New",
+            features: [
+                .init(
+                    image: .init(systemName: "checkmark.circle"),
+                    title: "A feature without a description"
+                )
+            ],
+            primaryAction: .init(title: "Continue to the next step")
+        )
+    )
+    .dynamicTypeSize(.accessibility5)
 }

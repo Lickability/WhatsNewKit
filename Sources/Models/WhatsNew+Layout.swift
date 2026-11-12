@@ -1,119 +1,66 @@
 import SwiftUI
 
-// MARK: - WhatsNew+Layout
-
 public extension WhatsNew {
-    
-    /// The WhatsNew Layout
+    /// Spacing for the native release-notes presentation.
     struct Layout: Sendable {
-        
-        // MARK: Properties
-
-        /// A Boolean value if the scroll view indicator should be visible
+        /// Whether the scroll view indicators are visible.
         public var showsScrollViewIndicators: Bool
-        
-        /// The scroll view bottom content inset
-        public var scrollViewBottomContentInset: CGFloat
-        
-        /// The content spacing
+        /// The vertical spacing between the title and the feature list.
         public var contentSpacing: CGFloat
-        
-        /// The content padding
+        /// The padding around the scrollable content.
         public var contentPadding: EdgeInsets
-        
-        /// The feature list spacing
+        /// The vertical spacing between features.
         public var featureListSpacing: CGFloat
-        
-        /// The feature list padding
-        public var featureListPadding: EdgeInsets
-        
-        /// The feature image width
+        /// The width reserved for each feature image.
         public var featureImageWidth: CGFloat
-        
-        /// The feature horizontal spacing
+        /// The horizontal spacing between a feature image and its text.
         public var featureHorizontalSpacing: CGFloat
-
-        /// The feature horizontal alignment
-        public var featureHorizontalAlignment: VerticalAlignment
-        
-        /// The feature vertical spacing
+        /// The vertical spacing between a feature title and its subtitle.
         public var featureVerticalSpacing: CGFloat
-        
-        /// The footer action spacing
+        /// The vertical spacing between the footer actions.
         public var footerActionSpacing: CGFloat
-        
-        /// The corner radius of the primary action button
-        public var footerPrimaryActionButtonCornerRadius: CGFloat
-        
-        /// The footer visual effect view padding
-        public var footerVisualEffectViewPadding: EdgeInsets
-        
-        // MARK: Initializer
-        
-        /// Creates a new instance of `WhatsNew.Layout`
+        /// The padding around the footer actions.
+        public var footerPadding: EdgeInsets
+
+        /// Creates a new instance of `WhatsNew.Layout`.
         /// - Parameters:
-        ///   - showsScrollViewIndicators: A Boolean value if the scroll view indicator should be visible. Default value `false`
-        ///   - scrollViewBottomContentInset: The scroll view bottom content inset. Default value `150`
-        ///   - contentSpacing: The content spacing. Default value `60`
-        ///   - contentPadding: The content padding. Default value `top: 65`
-        ///   - featureListSpacing: The feature list spacing. Default value `25`
-        ///   - featureListPadding: The feature list padding. Default value `leading: 15`
-        ///   - featureImageWidth: The feature image width. Default value `40`
-        ///   - featureHorizontalSpacing: The feature horizontal spacing. Default value `15`
-        ///   - featureVerticalSpacing: The feature vertical spacing. Default value `2`
-        ///   - footerActionSpacing: The footer action spacing. Default value `15`
-        ///   - footerPrimaryActionButtonCornerRadius: The corner radius of the primary action button. Default value `14`
-        ///   - footerVisualEffectViewPadding: The footer visual effect view padding. Default value `top: -10`
+        ///   - showsScrollViewIndicators: Whether scroll view indicators are visible. Defaults to `false`.
+        ///   - contentSpacing: The spacing between the title and feature list. Defaults to `24` points.
+        ///   - contentPadding: The scrollable content padding. Defaults to `top: 76, leading: 32, bottom: 24, trailing: 32`.
+        ///   - featureListSpacing: The vertical spacing between features. Defaults to `24` points.
+        ///   - featureImageWidth: The width reserved for each feature image. Defaults to `40` points.
+        ///   - featureHorizontalSpacing: The spacing between a feature image and its text. Defaults to `16` points.
+        ///   - featureVerticalSpacing: The spacing between a feature title and its subtitle. Defaults to `2` points.
+        ///   - footerActionSpacing: The vertical spacing between footer actions. Defaults to `16` points.
+        ///   - footerPadding: The footer action padding. Defaults to `top: 16, leading: 32, bottom: 0, trailing: 32`.
         public init(
             showsScrollViewIndicators: Bool = false,
-            scrollViewBottomContentInset: CGFloat = 150,
-            contentSpacing: CGFloat = 60,
-            contentPadding: EdgeInsets = .init(top: 65, leading: 0, bottom: 0, trailing: 0),
-            featureListSpacing: CGFloat = 25,
-            featureListPadding: EdgeInsets = .init(top: 0, leading: 15, bottom: 0, trailing: 0),
+            contentSpacing: CGFloat = 24,
+            contentPadding: EdgeInsets = .init(top: 76, leading: 32, bottom: 24, trailing: 32),
+            featureListSpacing: CGFloat = 24,
             featureImageWidth: CGFloat = 40,
-            featureHorizontalSpacing: CGFloat = 15,
-            featureHorizontalAlignment: VerticalAlignment = .center,
+            featureHorizontalSpacing: CGFloat = 16,
             featureVerticalSpacing: CGFloat = 2,
-            footerActionSpacing: CGFloat = 15,
-            footerPrimaryActionButtonCornerRadius: CGFloat = 14,
-            footerVisualEffectViewPadding: EdgeInsets = .init(top: -10, leading: 0, bottom: 0, trailing: 0)
+            footerActionSpacing: CGFloat = 16,
+            footerPadding: EdgeInsets = .init(top: 16, leading: 32, bottom: 0, trailing: 32)
         ) {
             self.showsScrollViewIndicators = showsScrollViewIndicators
-            self.scrollViewBottomContentInset = scrollViewBottomContentInset
             self.contentSpacing = contentSpacing
             self.contentPadding = contentPadding
             self.featureListSpacing = featureListSpacing
-            self.featureListPadding = featureListPadding
             self.featureImageWidth = featureImageWidth
             self.featureHorizontalSpacing = featureHorizontalSpacing
-            self.featureHorizontalAlignment = featureHorizontalAlignment
             self.featureVerticalSpacing = featureVerticalSpacing
             self.footerActionSpacing = footerActionSpacing
-            self.footerPrimaryActionButtonCornerRadius = footerPrimaryActionButtonCornerRadius
-            self.footerVisualEffectViewPadding = footerVisualEffectViewPadding
+            self.footerPadding = footerPadding
         }
-        
+
+        /// The standard layout. Pass a customized copy to a view or environment.
+        public static let `default` = Self()
+
+        /// Resets the layout to its default values.
+        public mutating func reset() {
+            self = .init()
+        }
     }
-    
-}
-
-// MARK: - Layout+default
-
-public extension WhatsNew.Layout {
-    
-    /// The standard layout. Pass a customized copy to a view or environment.
-    static let `default` = Self()
-    
-}
-
-// MARK: - Layout+reset
-
-public extension WhatsNew.Layout {
-    
-    /// Reset the Layout to default values
-    mutating func reset() {
-        self = .init()
-    }
-    
 }

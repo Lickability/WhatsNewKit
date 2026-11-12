@@ -15,8 +15,8 @@ public extension WhatsNew {
         /// The title Text
         public var title: Text
         
-        /// The subtitle Text
-        public var subtitle: Text
+        /// The optional subtitle Text. A nil or empty subtitle displays the title alone.
+        public var subtitle: Text?
         
         // MARK: Initializer
         
@@ -24,11 +24,11 @@ public extension WhatsNew {
         /// - Parameters:
         ///   - image: The image
         ///   - title: The title Text
-        ///   - subtitle: The subtitle Text
+        ///   - subtitle: The optional subtitle Text. Defaults to nil for a title-only feature.
         public init(
             image: Image,
             title: Text,
-            subtitle: Text
+            subtitle: Text? = nil
         ) {
             self.image = image
             self.title = title

@@ -64,10 +64,10 @@ struct ContentView: View {
 
 ## Requirements
 
-- iOS 26 or later, macOS 26 or later, or visionOS 1 or later.
-- Xcode 26 or later for iOS and macOS development. The package and example use Swift 6 language mode (Swift tools 6.0 or later).
+- iOS 26 or later, macOS 26 or later, or visionOS 26 or later.
+- Xcode 26 or later. The package and example use Swift 6 language mode (Swift tools 6.0 or later).
 
-This raises the minimum supported versions from iOS 13 to iOS 26 and from macOS 11 to macOS 26. Applications supporting earlier systems must remain on an earlier release.
+This raises the minimum supported versions from iOS 13 to iOS 26, macOS 11 to macOS 26, and visionOS 1 to visionOS 26. Applications supporting earlier systems must remain on an earlier release.
 
 ## Swift 6 migration
 
@@ -89,7 +89,7 @@ Run the macOS package tests with `swift test`. To run iOS tests locally, choose 
 xcodebuild test -scheme WhatsNewKit -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
 ```
 
-The example requires iOS 26, macOS 26, or visionOS 1. Open `Example/Example.xcodeproj` and select the `Example` scheme.
+The example requires iOS 26, macOS 26, or visionOS 26. Open `Example/Example.xcodeproj` and select the `Example` scheme.
 
 ## Installation
 
@@ -342,8 +342,7 @@ let whatsnew = WhatsNew(
     // The primary action that is used to dismiss the WhatsNewView
     primaryAction: WhatsNew.PrimaryAction(
         title: "Continue",
-        backgroundColor: .accentColor,
-        foregroundColor: .white,
+        tint: .accentColor,
         hapticFeedback: .notification(.success),
         onDismiss: {
             print("WhatsNewView has been dismissed")
@@ -420,6 +419,8 @@ let feature = WhatsNew.Feature(
 )
 ```
 
+Omit `subtitle` (or pass `nil` or empty text) for a title-only feature. It uses regular Body text; a feature with a description uses a semibold Body title and regular Body description.
+
 ### WhatsNew.PrimaryAction
 
 The `WhatsNew.PrimaryAction` allows you to configure the behaviour of the primary button which is used to dismiss the presented `WhatsNewView`
@@ -427,8 +428,7 @@ The `WhatsNew.PrimaryAction` allows you to configure the behaviour of the primar
 ```swift
 let primaryAction = WhatsNew.PrimaryAction(
     title: "Continue",
-    backgroundColor: .blue,
-    foregroundColor: .white,
+    tint: .blue,
     hapticFeedback: .notification(.success),
     onDismiss: {
         print("WhatsNewView has been dismissed")
@@ -437,6 +437,18 @@ let primaryAction = WhatsNew.PrimaryAction(
 ```
 
 > Note: HapticFeedback will only be executed on iOS
+
+### WhatsNew.Notice
+
+Add optional supplemental text, such as a privacy notice, below the features. Short notices sit near the bottom of the content; longer notices scroll so they remain readable at accessibility text sizes. Attributed text can include links.
+
+```swift
+let notice = WhatsNew.Notice(
+    image: .init(systemName: "hand.raised.fill", foregroundColor: .blue),
+    text: .init(try AttributedString(markdown: "Learn how we handle your information in our [privacy policy](https://example.com/privacy)."))
+)
+// Pass notice: notice to WhatsNew's initializer.
+```
 
 ### WhatsNew.SecondaryAction
 
@@ -490,6 +502,20 @@ When embedding `WhatsNewView` directly or using `WhatsNewViewController`, versio
 ## Layout
 
 WhatsNewKit allows you to adjust the layout of a presented `WhatsNewView` in various ways.
+
+The default presentation uses a compact leading title, top-aligned feature symbols, and a native capsule action. Content and actions fill the available width with 32-point horizontal padding. On macOS, sheets start at an ideal size of 560 × 640 points and remain resizable through native fitted presentation sizing. The bottom action bar reserves its own space with `safeAreaBar` on all supported platforms. The primary button uses the native prominent glass style on iOS and macOS and the native bordered prominent style on visionOS.
+
+Typography uses public SwiftUI semantic styles: Title 2 bold for the compact heading, Body semibold for feature titles with descriptions and the primary action, and Body regular for descriptions and title-only features. The primary button has a 44-point minimum height and grows with its content. Only the primary action caps Dynamic Type at `.accessibility4`; the rest of the content continues through `.accessibility5`. The fonts and scaling follow the measured standard OnBoardingKit configuration on iOS 27.2; the 44-point button minimum is a deliberate visual adjustment from its measured 52-point minimum. Other platforms use their native semantic font metrics. Supplemental notices retain their separate caption styling.
+
+### Migrating from the previous design
+
+This redesign changes the public styling API:
+
+- Replace `PrimaryAction(backgroundColor:foregroundColor:)` with `PrimaryAction(tint:)`. SwiftUI supplies the button's foreground, shape, and pressed appearance.
+- Use `contentPadding` for the title and feature content, and `footerPadding` for the actions. `featureListPadding` and `footerVisualEffectViewPadding` are removed.
+- `scrollViewBottomContentInset` is removed: the bottom bar reserves space automatically.
+- `featureHorizontalAlignment` and `footerPrimaryActionButtonCornerRadius` are removed. Feature icons are top aligned and the primary action is a native capsule.
+- Use `featureImageWidth` to size the icon column.
 
 Create a layout, then pass it to the environment or an individual presentation. The standard `WhatsNew.Layout.default` is immutable.
 

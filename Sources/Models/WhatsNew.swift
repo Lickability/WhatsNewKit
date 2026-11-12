@@ -22,6 +22,9 @@ public struct WhatsNew {
     /// The optional SecondaryAction
     public var secondaryAction: SecondaryAction?
     
+    /// Optional supplemental information, such as a privacy notice.
+    public var notice: Notice?
+
     // MARK: Initializer
     
     /// Creates a new instance of `WhatsNew`
@@ -30,19 +33,22 @@ public struct WhatsNew {
     ///   - title: The Title
     ///   - items: The Features
     ///   - primaryAction: The PrimaryAction. Default value `.init()`
-    ///   - secondaryAction: The optional SecondaryAction. Default value `nil`
+    ///   - secondaryAction: The optional SecondaryAction
+    ///   - notice: Optional information shown below the features. Default value `nil`
     public init(
         version: Version = .current(),
         title: Title,
         features: [Feature],
         primaryAction: PrimaryAction = .init(),
-        secondaryAction: SecondaryAction? = nil
+        secondaryAction: SecondaryAction? = nil,
+        notice: Notice? = nil
     ) {
         self.version = version
         self.title = title
         self.features = features
         self.primaryAction = primaryAction
         self.secondaryAction = secondaryAction
+        self.notice = notice
     }
     
 }
