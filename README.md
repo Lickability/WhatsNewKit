@@ -15,26 +15,12 @@
 </p>
 
 <p align="center">
-   <a href="https://swiftpackageindex.com/SvenTiigi/WhatsNewKit">
-    <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSvenTiigi%2FWhatsNewKit%2Fbadge%3Ftype%3Dswift-versions" alt="Swift Version">
-   </a>
-   <a href="https://swiftpackageindex.com/SvenTiigi/WhatsNewKit">
-    <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FSvenTiigi%2FWhatsNewKit%2Fbadge%3Ftype%3Dplatforms" alt="Platforms">
-   </a>
-   <br/>
-   <a href="https://github.com/SvenTiigi/WhatsNewKit/actions/workflows/build_and_test.yml">
-       <img src="https://github.com/SvenTiigi/WhatsNewKit/actions/workflows/build_and_test.yml/badge.svg" alt="Build and Test Status">
-   </a>
-   <a href="https://sventiigi.github.io/WhatsNewKit/documentation/whatsnewkit/">
-       <img src="https://img.shields.io/badge/Documentation-DocC-blue" alt="Documentation">
-   </a>
-   <a href="https://twitter.com/SvenTiigi/">
-      <img src="https://img.shields.io/badge/Twitter-@SvenTiigi-blue.svg?style=flat" alt="Twitter">
-   </a>
-   <a href="https://mastodon.world/@SvenTiigi">
-      <img src="https://img.shields.io/badge/Mastodon-@SvenTiigi-8c8dff.svg?style=flat" alt="Mastodon">
+   <a href="https://github.com/Lickability/WhatsNewKit/actions/workflows/build_and_test.yml">
+       <img src="https://github.com/Lickability/WhatsNewKit/actions/workflows/build_and_test.yml/badge.svg" alt="Build and Test Status">
    </a>
 </p>
+
+This is Lickability's fork of [WhatsNewKit by Sven Tiigi](https://github.com/SvenTiigi/WhatsNewKit). Version 3.0.0 introduces breaking API changes and requires iOS 26, macOS 26, or visionOS 26. See the [release notes](CHANGELOG.md#300) and [migration guidance](#swift-6-migration) before upgrading.
 
 <img align="right" width="315" src="Assets/example.png" alt="Example">
 
@@ -99,11 +85,13 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/SvenTiigi/WhatsNewKit.git", from: "2.0.0")
+    .package(url: "https://github.com/Lickability/WhatsNewKit.git", from: "3.0.0")
 ]
 ```
 
-Or navigate to your Xcode project then select `Swift Packages`, click the “+” icon and search for `WhatsNewKit`.
+In Xcode, choose **File > Add Package Dependencies**, enter `https://github.com/Lickability/WhatsNewKit.git`, and select **Up to Next Major Version** starting at `3.0.0`. When migrating from upstream, replace the existing package dependency with this fork; keep the `WhatsNewKit` product and import.
+
+The version requirement resolves after the `3.0.0` tag is published. See [Releasing](RELEASING.md) for the maintainer steps.
 
 ## Example
 
@@ -117,13 +105,13 @@ Check out the example application to see WhatsNewKit in action. Simply open the 
 
 ### Table of contents
 
-- [Manual Presentation](https://github.com/SvenTiigi/WhatsNewKit/tree/main#manual-presentation)
-- [Automatic Presentation](https://github.com/SvenTiigi/WhatsNewKit/tree/main#automatic-presentation)
-- [WhatsNewEnvironment](https://github.com/SvenTiigi/WhatsNewKit/tree/main#whatsnewenvironment)
-- [WhatsNewVersionStore](https://github.com/SvenTiigi/WhatsNewKit/tree/main#whatsnewversionstore)
-- [WhatsNew](https://github.com/SvenTiigi/WhatsNewKit/tree/main#whatsnew)
-- [Layout](https://github.com/SvenTiigi/WhatsNewKit/tree/main#layout)
-- [WhatsNewViewController](https://github.com/SvenTiigi/WhatsNewKit/tree/main#whatsnewviewcontroller)
+- [Manual Presentation](#manual-presentation)
+- [Automatic Presentation](#automatic-presentation)
+- [WhatsNewEnvironment](#whatsnewenvironment)
+- [WhatsNewVersionStore](#whatsnewversionstore)
+- [WhatsNew](#whatsnew)
+- [Layout](#layout)
+- [WhatsNewViewController](#whatsnewviewcontroller)
 
 ### Manual Presentation
 
@@ -354,7 +342,7 @@ let whatsnew = WhatsNew(
         foregroundColor: .accentColor,
         hapticFeedback: .selection,
         action: .openURL(
-            .init(string: "https://github.com/SvenTiigi/WhatsNewKit")
+            .init(string: "https://github.com/Lickability/WhatsNewKit")
         )
     )
 )
@@ -471,7 +459,7 @@ let secondaryActionOpenURL = WhatsNew.SecondaryAction(
     foregroundColor: .blue,
     hapticFeedback: .selection,
     action: .openURL(
-        .init(string: "https://github.com/SvenTiigi/WhatsNewKit")
+        .init(string: "https://github.com/Lickability/WhatsNewKit")
     )
 )
 
