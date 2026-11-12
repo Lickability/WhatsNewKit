@@ -22,7 +22,7 @@
 
 This is Lickability's fork of [WhatsNewKit by Sven Tiigi](https://github.com/SvenTiigi/WhatsNewKit). Version 3.0.0 introduces breaking API changes and requires iOS 26, macOS 26, or visionOS 26. See the [release notes](CHANGELOG.md#300) and [migration guidance](#swift-6-migration) before upgrading.
 
-<img align="right" width="315" src="Assets/example.png" alt="Example">
+<img align="right" width="315" src="Assets/example.png" alt="WhatsNewKit release notes with a leading heading, four feature rows, and a native capsule Continue button">
 
 ```swift
 import SwiftUI
@@ -98,8 +98,12 @@ The version requirement resolves after the `3.0.0` tag is published. See [Releas
 Check out the example application to see WhatsNewKit in action. Simply open the `Example/Example.xcodeproj` and run the "Example" scheme.
 
 <p align="center">
-    <img width="95%" src="Assets/example-app.png" alt="Example Applications">
+    <img width="31%" src="Assets/example-shortcuts.png" alt="Shortcuts example with three blue feature icons and a native Continue button">
+    <img width="31%" src="Assets/example-translate.png" alt="Translate example with cyan feature icons, a privacy link, and a native Continue button">
+    <img width="31%" src="Assets/example-maps.png" alt="Maps example with multicolored feature icons, a privacy link, and a native Continue button">
 </p>
+
+Captured on the iPhone 18 Pro simulator running iOS 27.2 at the default text size.
 
 ## Usage
 
