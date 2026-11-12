@@ -25,6 +25,7 @@ jobs:
         with:
           xcode-version: latest
       - name: Setup Pages
+        # Enable GitHub Pages with the GitHub Actions source in repository settings first.
         uses: actions/configure-pages@v6
       - name: Build Documentation
         run: |
@@ -46,10 +47,10 @@ jobs:
           <!DOCTYPE html>
           <html>
             <head>
-              <meta http-equiv="refresh" content="0; url='https://sventiigi.github.io/WhatsNewKit/documentation/whatsnewkit/'" />
+              <meta http-equiv="refresh" content="0; url='./documentation/whatsnewkit/'" />
             </head>
            <body>
-              <p>Please follow <a href="https://sventiigi.github.io/WhatsNewKit/documentation/whatsnewkit/">this link</a>.</p>
+              <p>Please follow <a href="./documentation/whatsnewkit/">this link</a>.</p>
             </body>
           </html>
           EOM
