@@ -2,9 +2,10 @@
 
 ## Unreleased
 
-- Added `WhatsNewHistoryView` for scrolling, version-grouped release notes with customizable version headings.
+- Added `WhatsNewHistoryView` for scrolling, version-grouped release notes with customizable headings that default to marketing version and build, such as `1.2.3 (456)`.
+- Added optional per-release build numbers. Current-app release notes read the version and build from the bundle; historical releases retain explicitly supplied values.
 - Shared feature rows between the launch sheet and history, with icons above the text at accessibility sizes.
-- Feature titles remain semibold even when a subtitle is omitted or empty.
+- Feature titles remain semibold and align vertically with their symbols when a subtitle is omitted or empty.
 
 ## 3.0.0
 

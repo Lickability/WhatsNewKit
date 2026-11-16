@@ -4,40 +4,38 @@ import SwiftUI
 ///
 /// Embed this view in your app's navigation and supply a navigation title. Releases
 /// appear in the supplied order, so pass the newest first for a chronological history.
-/// Each release must have a unique version. Reading the history does not mark any
-/// version as presented or run a release's primary or secondary actions.
+/// Multiple builds of the same marketing version can appear as separate entries.
+/// Reading the history does not mark any version as presented or run release actions.
 @MainActor
 public struct WhatsNewHistoryView: View {
     private let whatsNewCollection: WhatsNewCollection
     private let layout: WhatsNew.Layout
-    private let versionTitle: @MainActor (WhatsNew.Version) -> Text
+    private let versionTitle: @MainActor (WhatsNew) -> Text
 
     /// Creates a release history from the same models used by `WhatsNewView`.
     /// - Parameters:
-    ///   - whatsNewCollection: Releases in display order, with unique versions.
+    ///   - whatsNewCollection: Releases in display order, including their historical build numbers.
     ///   - layout: Feature-row spacing. Other presentation layout values are unused.
-    ///   - versionTitle: A heading for each version. Defaults to “Version 1.2.3”.
+    ///   - versionTitle: A heading for each release. Defaults to “1.2.3 (456)”, or “1.2.3” if the build is unknown.
     public init(
         whatsNewCollection: WhatsNewCollection,
         layout: WhatsNew.Layout = .default,
-        versionTitle: @escaping @MainActor (WhatsNew.Version) -> Text = {
-            Text("Version \($0.description)")
-        }
+        versionTitle: (@MainActor (WhatsNew) -> Text)? = nil
     ) {
         self.whatsNewCollection = whatsNewCollection
         self.layout = layout
-        self.versionTitle = versionTitle
+        self.versionTitle = versionTitle ?? { Text(verbatim: $0.historyVersionTitle) }
     }
 
     public var body: some View {
-        List(whatsNewCollection) { whatsNew in
+        List(Array(whatsNewCollection.enumerated()), id: \.offset) { _, whatsNew in
             Section {
                 ForEach(whatsNew.features, id: \.self) { feature in
                     WhatsNewFeatureView(feature: feature, layout: layout)
                         .listRowSeparator(.hidden)
                 }
             } header: {
-                versionTitle(whatsNew.version)
+                versionTitle(whatsNew)
             }
         }
     }
@@ -60,8 +58,8 @@ public struct WhatsNewHistoryView: View {
 
 #Preview("Custom version headings") {
     NavigationStack {
-        WhatsNewHistoryView(whatsNewCollection: historyPreviewReleases) { version in
-            Text("\(version.major).\(version.minor) (\(version.patch))")
+        WhatsNewHistoryView(whatsNewCollection: historyPreviewReleases) { release in
+            Text("Version \(release.version.description)")
         }
         .navigationTitle("Updates")
     }
@@ -70,7 +68,7 @@ public struct WhatsNewHistoryView: View {
 @MainActor
 private var historyPreviewReleases: WhatsNewCollection {
     [
-        WhatsNew(version: "1.1.0", title: "What’s New", features: [
+        WhatsNew(version: "1.1.0", buildNumber: "110", title: "What’s New", features: [
             .init(
                 image: .init(systemName: "sparkles"),
                 title: "More room for your ideas",
@@ -79,8 +77,17 @@ private var historyPreviewReleases: WhatsNewCollection {
             .init(image: .init(systemName: "checkmark.circle"), title: "A feature without a subtitle"),
             .init(image: .init(systemName: "bolt"), title: "An empty subtitle is omitted", subtitle: "")
         ]),
-        WhatsNew(version: "1.0.0", title: "What’s New", features: [
+        WhatsNew(version: "1.0.0", buildNumber: "100", title: "What’s New", features: [
             .init(image: .init(systemName: "star"), title: "Our first release", subtitle: "Everything you need to get started.")
         ])
     ]
+}
+
+extension WhatsNew {
+    var historyVersionTitle: String {
+        guard let buildNumber, !buildNumber.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return version.description
+        }
+        return "\(version.description) (\(buildNumber))"
+    }
 }

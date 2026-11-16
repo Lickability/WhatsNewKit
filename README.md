@@ -164,13 +164,13 @@ NavigationLink("Release Notes") {
 }
 ```
 
-Pass releases in display order (usually newest first), with a unique version for each entry. Archive each shipped update with an explicit version so its notes remain associated with that release. The history does not mark updates as seen, present notices, or run primary or secondary actions. It owns neither a navigation stack nor a dismissal button, so it can be pushed from Settings or embedded in your own sheet.
+Pass releases in display order (usually newest first). Headings default to `1.2.3 (456)`: marketing version, then build number. `WhatsNew(title:features:)` reads both values from the main bundle. Archive each shipped update with an explicit `version` and `buildNumber`, for example `WhatsNew(version: "1.2.3", buildNumber: "456", title: "What’s New", features: features)`. Historical entries with no known build show only their marketing version. Multiple builds of the same marketing version can appear as separate entries. The history does not mark updates as seen, present notices, or run primary or secondary actions. It owns neither a navigation stack nor a dismissal button, so it can be pushed from Settings or embedded in your own sheet.
 
 Customize version headings when your app uses a different version format:
 
 ```swift
-WhatsNewHistoryView(whatsNewCollection: releases) { version in
-    Text("\(version.major).\(version.minor) (\(version.patch))")
+WhatsNewHistoryView(whatsNewCollection: releases) { release in
+    Text("Version \(release.version.description)")
 }
 .navigationTitle("Updates")
 ```

@@ -9,7 +9,6 @@ struct WhatsNewFeatureView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        let hasSubtitle = (feature.subtitle?.attributedString.length ?? 0) > 0
         featureLayout {
             feature.image.view()
                 .frame(width: dynamicTypeSize.isAccessibilitySize ? nil : layout.featureImageWidth)
@@ -29,11 +28,15 @@ struct WhatsNewFeatureView: View {
         .accessibilityElement(children: .combine)
     }
 
+    private var hasSubtitle: Bool {
+        (feature.subtitle?.attributedString.length ?? 0) > 0
+    }
+
     private var featureLayout: AnyLayout {
         if dynamicTypeSize.isAccessibilitySize {
             AnyLayout(VStackLayout(alignment: .leading, spacing: layout.featureVerticalSpacing))
         } else {
-            AnyLayout(HStackLayout(alignment: .top, spacing: layout.featureHorizontalSpacing))
+            AnyLayout(HStackLayout(alignment: hasSubtitle ? .top : .center, spacing: layout.featureHorizontalSpacing))
         }
     }
 }
@@ -49,4 +52,12 @@ struct WhatsNewFeatureView: View {
     )
     .padding()
     .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("Title-only feature") {
+    WhatsNewFeatureView(
+        feature: .init(image: .init(systemName: "checkmark.circle"), title: "Faster launch"),
+        layout: .default
+    )
+    .padding()
 }
