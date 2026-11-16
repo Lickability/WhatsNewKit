@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added `WhatsNewHistoryView` for scrolling, version-grouped release notes with customizable version headings.
+- Shared feature rows between the launch sheet and history, with icons above the text at accessibility sizes.
+
 ## 3.0.0
 
 The first major release of Lickability's fork, based on upstream 2.2.1. Requires Xcode 26 or later and iOS 26, macOS 26, or visionOS 26. The package uses Swift 6 language mode.

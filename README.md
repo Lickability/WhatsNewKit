@@ -114,6 +114,7 @@ Captured on the iPhone 18 Pro simulator running iOS 27.2 at the default text siz
 - [WhatsNewEnvironment](#whatsnewenvironment)
 - [WhatsNewVersionStore](#whatsnewversionstore)
 - [WhatsNew](#whatsnew)
+- [Release History](#release-history)
 - [Layout](#layout)
 - [WhatsNewViewController](#whatsnewviewcontroller)
 
@@ -151,6 +152,30 @@ struct ContentView: View {
 
 }
 ```
+
+### Release History
+
+Use `WhatsNewHistoryView` in Settings to show a scrolling list of version updates. It reuses the same `WhatsNew` models and feature rows as the launch sheet, including attributed text and features without subtitles.
+
+```swift
+NavigationLink("Release Notes") {
+    WhatsNewHistoryView(whatsNewCollection: releases)
+        .navigationTitle("Release Notes")
+}
+```
+
+Pass releases in display order (usually newest first), with a unique version for each entry. Archive each shipped update with an explicit version so its notes remain associated with that release. The history does not mark updates as seen, present notices, or run primary or secondary actions. It owns neither a navigation stack nor a dismissal button, so it can be pushed from Settings or embedded in your own sheet.
+
+Customize version headings when your app uses a different version format:
+
+```swift
+WhatsNewHistoryView(whatsNewCollection: releases) { version in
+    Text("\(version.major).\(version.minor) (\(version.patch))")
+}
+.navigationTitle("Updates")
+```
+
+The optional `layout` parameter controls feature image width and horizontal/vertical row spacing; sheet padding and footer settings do not apply. At accessibility text sizes, both the history and launch sheet place feature icons above their text to preserve reading width.
 
 ### Automatic Presentation
 

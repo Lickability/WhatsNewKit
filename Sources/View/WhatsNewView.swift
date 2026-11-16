@@ -114,24 +114,7 @@ private extension WhatsNewView {
     }
 
     func feature(_ feature: WhatsNew.Feature) -> some View {
-        let hasSubtitle = (feature.subtitle?.attributedString.length ?? 0) > 0
-        return HStack(alignment: .top, spacing: layout.featureHorizontalSpacing) {
-            feature.image.view()
-                .frame(width: layout.featureImageWidth)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: layout.featureVerticalSpacing) {
-                Text(whatsNewText: feature.title)
-                    .font(.body.weight(hasSubtitle ? .semibold : .regular))
-                    .foregroundStyle(.primary)
-                if hasSubtitle, let subtitle = feature.subtitle {
-                    Text(whatsNewText: subtitle)
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .accessibilityElement(children: .combine)
+        WhatsNewFeatureView(feature: feature, layout: layout)
     }
 
     func noticeContent(_ notice: WhatsNew.Notice) -> some View {
