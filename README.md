@@ -20,7 +20,7 @@
    </a>
 </p>
 
-This is Lickability's fork of [WhatsNewKit by Sven Tiigi](https://github.com/SvenTiigi/WhatsNewKit). Version 3.0.0 introduces breaking API changes and requires iOS 26, macOS 26, or visionOS 26. See the [release notes](CHANGELOG.md#300) and [migration guidance](#swift-6-migration) before upgrading.
+This is Lickability's fork of [WhatsNewKit by Sven Tiigi](https://github.com/SvenTiigi/WhatsNewKit). Version 3.0.0 introduces breaking API changes and requires iOS 26, macOS 26, or visionOS 26. Version 3.1.0 adds a reusable release history screen. See the [latest release notes](CHANGELOG.md#310) and [migration guidance](#swift-6-migration) before upgrading.
 
 <img align="right" width="315" src="Assets/example.png" alt="WhatsNewKit release notes with a leading heading, four feature rows, and a native capsule Continue button">
 
@@ -85,13 +85,13 @@ To integrate using Apple's [Swift Package Manager](https://swift.org/package-man
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/Lickability/WhatsNewKit.git", from: "3.0.0")
+    .package(url: "https://github.com/Lickability/WhatsNewKit.git", from: "3.1.0")
 ]
 ```
 
-In Xcode, choose **File > Add Package Dependencies**, enter `https://github.com/Lickability/WhatsNewKit.git`, and select **Up to Next Major Version** starting at `3.0.0`. When migrating from upstream, replace the existing package dependency with this fork; keep the `WhatsNewKit` product and import.
+In Xcode, choose **File > Add Package Dependencies**, enter `https://github.com/Lickability/WhatsNewKit.git`, and select **Up to Next Major Version** starting at `3.1.0`. When migrating from upstream, replace the existing package dependency with this fork; keep the `WhatsNewKit` product and import.
 
-The version requirement resolves after the `3.0.0` tag is published. See [Releasing](RELEASING.md) for the maintainer steps.
+The version requirement resolves after the `3.1.0` tag is published. See [Releasing](RELEASING.md) for the maintainer steps.
 
 ## Example
 

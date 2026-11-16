@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 3.1.0
+
+Adds a reusable release history screen and build metadata. This is a backward-compatible update to 3.0.0 with the same platform requirements.
 
 - Added `WhatsNewHistoryView` for scrolling, version-grouped release notes with customizable headings that default to marketing version and build, such as `1.2.3 (456)`.
 - Added optional per-release build numbers. Current-app release notes read the version and build from the bundle; historical releases retain explicitly supplied values.
