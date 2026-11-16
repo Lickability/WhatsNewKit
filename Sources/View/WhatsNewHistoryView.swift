@@ -2,8 +2,8 @@ import SwiftUI
 
 /// A scrolling list of release notes grouped by version.
 ///
-/// Embed this view in your app's navigation and supply a navigation title. Releases
-/// appear in the supplied order, so pass the newest first for a chronological history.
+/// Embed this view in your app's navigation and supply a navigation title.
+/// Releases appear in the supplied order. Pass newest first for reverse chronological order.
 /// Multiple builds of the same marketing version can appear as separate entries.
 /// Reading the history does not mark any version as presented or run release actions.
 @MainActor
