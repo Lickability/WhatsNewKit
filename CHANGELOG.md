@@ -4,6 +4,7 @@
 
 - Added `WhatsNewHistoryView` for scrolling, version-grouped release notes with customizable version headings.
 - Shared feature rows between the launch sheet and history, with icons above the text at accessibility sizes.
+- Feature titles remain semibold even when a subtitle is omitted or empty.
 
 ## 3.0.0
 

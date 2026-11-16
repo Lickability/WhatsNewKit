@@ -16,7 +16,7 @@ struct WhatsNewFeatureView: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: layout.featureVerticalSpacing) {
                 Text(whatsNewText: feature.title)
-                    .font(.body.weight(hasSubtitle ? .semibold : .regular))
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(.primary)
                 if hasSubtitle, let subtitle = feature.subtitle {
                     Text(whatsNewText: subtitle)
