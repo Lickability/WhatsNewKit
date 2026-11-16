@@ -175,7 +175,7 @@ WhatsNewHistoryView(whatsNewCollection: releases) { release in
 .navigationTitle("Updates")
 ```
 
-The optional `layout` parameter controls feature image width and horizontal/vertical row spacing; sheet padding and footer settings do not apply. At accessibility text sizes, both the history and launch sheet place feature icons above their text to preserve reading width.
+At accessibility text sizes, both the history and launch sheet place feature icons above their text to preserve reading width.
 
 ### Automatic Presentation
 

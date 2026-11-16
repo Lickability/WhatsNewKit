@@ -9,21 +9,17 @@ import SwiftUI
 @MainActor
 public struct WhatsNewHistoryView: View {
     private let whatsNewCollection: WhatsNewCollection
-    private let layout: WhatsNew.Layout
     private let versionTitle: @MainActor (WhatsNew) -> Text
 
     /// Creates a release history from the same models used by `WhatsNewView`.
     /// - Parameters:
     ///   - whatsNewCollection: Releases in display order, including their historical build numbers.
-    ///   - layout: Feature-row spacing. Other presentation layout values are unused.
     ///   - versionTitle: A heading for each release. Defaults to “1.2.3 (456)”, or “1.2.3” if the build is unknown.
     public init(
         whatsNewCollection: WhatsNewCollection,
-        layout: WhatsNew.Layout = .default,
         versionTitle: (@MainActor (WhatsNew) -> Text)? = nil
     ) {
         self.whatsNewCollection = whatsNewCollection
-        self.layout = layout
         self.versionTitle = versionTitle ?? { Text(verbatim: $0.historyVersionTitle) }
     }
 
@@ -31,7 +27,7 @@ public struct WhatsNewHistoryView: View {
         List(Array(whatsNewCollection.enumerated()), id: \.offset) { _, whatsNew in
             Section {
                 ForEach(whatsNew.features, id: \.self) { feature in
-                    WhatsNewFeatureView(feature: feature, layout: layout)
+                    WhatsNewFeatureView(feature: feature, layout: .default)
                         .listRowSeparator(.hidden)
                 }
             } header: {
