@@ -442,6 +442,9 @@ Omit `subtitle` (or pass `nil` or empty text) for a title-only feature. It uses 
 
 The `WhatsNew.PrimaryAction` allows you to configure the behaviour of the primary button which is used to dismiss the presented `WhatsNewView`
 
+The label uses the native button style's foreground by default. For custom tints that need a contrasting label, supply `foregroundColor`, for example `PrimaryAction(tint: .white, foregroundColor: .black)`. Choose colors that remain readable in each supported appearance.
+
+
 ```swift
 let primaryAction = WhatsNew.PrimaryAction(
     title: "Continue",
@@ -528,7 +531,7 @@ Typography uses public SwiftUI semantic styles: Title 2 bold for the compact hea
 
 This redesign changes the public styling API:
 
-- Replace `PrimaryAction(backgroundColor:foregroundColor:)` with `PrimaryAction(tint:)`. SwiftUI supplies the button's foreground, shape, and pressed appearance.
+- Replace `PrimaryAction(backgroundColor:foregroundColor:)` with `PrimaryAction(tint:)`. SwiftUI supplies the button's shape, pressed appearance, and default foreground. In 3.1.0 and later, an optional `foregroundColor` can override the label color for custom tints.
 - Use `contentPadding` for the title and feature content, and `footerPadding` for the actions. `featureListPadding` and `footerVisualEffectViewPadding` are removed.
 - `scrollViewBottomContentInset` is removed: the bottom bar reserves space automatically.
 - `featureHorizontalAlignment` and `footerPrimaryActionButtonCornerRadius` are removed. Feature icons are top aligned and the primary action is a native capsule.

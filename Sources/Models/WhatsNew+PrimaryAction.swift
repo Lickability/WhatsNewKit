@@ -14,6 +14,9 @@ public extension WhatsNew {
         
         /// The tint used by the native prominent button style.
         public var tint: Color
+
+        /// An optional label color. A nil value preserves the native button style’s foreground.
+        public var foregroundColor: Color?
         
         /// The optional HapticFeedback
         public var hapticFeedback: HapticFeedback?
@@ -27,16 +30,19 @@ public extension WhatsNew {
         /// - Parameters:
         ///   - title: The title Text. Default value `Continue`
         ///   - tint: The native button tint. Default value `.accentColor`
+        ///   - foregroundColor: An optional label color for custom tints. Default value `nil` uses the native foreground.
         ///   - hapticFeedback: The optional HapticFeedback. Default value `nil`
         ///   - onDismiss: Called when the primary button requests dismissal. Use the sheet modifier’s onDismiss for completion. Default value `nil`
         public init(
             title: Text = "Continue",
             tint: Color = .accentColor,
+            foregroundColor: Color? = nil,
             hapticFeedback: HapticFeedback? = nil,
             onDismiss: (@MainActor () -> Void)? = nil
         ) {
             self.title = title
             self.tint = tint
+            self.foregroundColor = foregroundColor
             self.hapticFeedback = hapticFeedback
             self.onDismiss = onDismiss
         }
