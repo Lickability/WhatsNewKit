@@ -75,6 +75,8 @@ extension App: WhatsNewCollectionProvider {
                 )
             ],
             primaryAction: .init(
+                tint: .white,
+                foregroundColor: .black,
                 hapticFeedback: {
                     #if os(iOS)
                     .notification(.success)

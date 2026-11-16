@@ -22,6 +22,15 @@ extension ExamplesView: View {
     /// The content and behavior of the view
     var body: some View {
         List {
+            Section("History") {
+                NavigationLink("Release Notes") {
+                    WhatsNewHistoryView(whatsNewCollection: Self.releaseHistory)
+                        .navigationTitle("Release Notes")
+                        #if os(iOS)
+                        .navigationBarTitleDisplayMode(.inline)
+                        #endif
+                }
+            }
             Section(
                 header: Text(
                     verbatim: "Examples"
@@ -219,4 +228,23 @@ private extension AttributeContainer {
 
 #Preview {
     NavigationStack { ExamplesView() }
+}
+
+private extension ExamplesView {
+    static var releaseHistory: WhatsNewCollection {
+        [
+            WhatsNew(version: "1.2.0", buildNumber: "120", title: "What’s New", features: [
+                .init(image: .init(systemName: "clock.arrow.circlepath", foregroundColor: .blue), title: "Release History", subtitle: "Browse what changed in this version and earlier releases, all in one place."),
+                .init(image: .init(systemName: "textformat.size", foregroundColor: .purple), title: "Room for Larger Text", subtitle: "Feature icons move above their descriptions at accessibility text sizes."),
+                .init(image: .init(systemName: "checkmark.circle", foregroundColor: .green), title: "Faster launch")
+            ]),
+            WhatsNew(version: "1.1.0", buildNumber: "110", title: "What’s New", features: [
+                .init(image: .init(systemName: "paintpalette", foregroundColor: .orange), title: "Make It Yours", subtitle: "Customize feature icons, colors, and version headings."),
+                .init(image: .init(systemName: "sparkles", foregroundColor: .pink), title: "Small improvements", subtitle: "")
+            ]),
+            WhatsNew(version: "1.0.0", buildNumber: "100", title: "What’s New", features: [
+                .init(image: .init(systemName: "star", foregroundColor: .yellow), title: "Our First Release", subtitle: "A simple way to introduce new features.")
+            ])
+        ]
+    }
 }

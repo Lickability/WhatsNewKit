@@ -114,6 +114,7 @@ Captured on the iPhone 18 Pro simulator running iOS 27.2 at the default text siz
 - [WhatsNewEnvironment](#whatsnewenvironment)
 - [WhatsNewVersionStore](#whatsnewversionstore)
 - [WhatsNew](#whatsnew)
+- [Release History](#release-history)
 - [Layout](#layout)
 - [WhatsNewViewController](#whatsnewviewcontroller)
 
@@ -151,6 +152,30 @@ struct ContentView: View {
 
 }
 ```
+
+### Release History
+
+Use `WhatsNewHistoryView` in Settings to show a scrolling list of version updates. It reuses the same `WhatsNew` models and feature rows as the launch sheet, including attributed text and features without subtitles.
+
+```swift
+NavigationLink("Release Notes") {
+    WhatsNewHistoryView(whatsNewCollection: releases)
+        .navigationTitle("Release Notes")
+}
+```
+
+Pass releases in display order (usually newest first). Headings default to `1.2.3 (456)`: marketing version, then build number. `WhatsNew(title:features:)` reads both values from the main bundle. Archive each shipped update with an explicit `version` and `buildNumber`, for example `WhatsNew(version: "1.2.3", buildNumber: "456", title: "What’s New", features: features)`. Historical entries with no known build show only their marketing version. Multiple builds of the same marketing version can appear as separate entries. The history does not mark updates as seen, present notices, or run primary or secondary actions. It owns neither a navigation stack nor a dismissal button, so it can be pushed from Settings or embedded in your own sheet.
+
+Customize version headings when your app uses a different version format:
+
+```swift
+WhatsNewHistoryView(whatsNewCollection: releases) { release in
+    Text("Version \(release.version.description)")
+}
+.navigationTitle("Updates")
+```
+
+At accessibility text sizes, both the history and launch sheet place feature icons above their text to preserve reading width.
 
 ### Automatic Presentation
 
@@ -417,6 +442,9 @@ Omit `subtitle` (or pass `nil` or empty text) for a title-only feature. It uses 
 
 The `WhatsNew.PrimaryAction` allows you to configure the behaviour of the primary button which is used to dismiss the presented `WhatsNewView`
 
+The label uses the native button style's foreground by default. For custom tints that need a contrasting label, supply `foregroundColor`, for example `PrimaryAction(tint: .white, foregroundColor: .black)`. Choose colors that remain readable in each supported appearance.
+
+
 ```swift
 let primaryAction = WhatsNew.PrimaryAction(
     title: "Continue",
@@ -503,7 +531,7 @@ Typography uses public SwiftUI semantic styles: Title 2 bold for the compact hea
 
 This redesign changes the public styling API:
 
-- Replace `PrimaryAction(backgroundColor:foregroundColor:)` with `PrimaryAction(tint:)`. SwiftUI supplies the button's foreground, shape, and pressed appearance.
+- Replace `PrimaryAction(backgroundColor:foregroundColor:)` with `PrimaryAction(tint:)`. SwiftUI supplies the button's shape, pressed appearance, and default foreground. In 3.1.0 and later, an optional `foregroundColor` can override the label color for custom tints.
 - Use `contentPadding` for the title and feature content, and `footerPadding` for the actions. `featureListPadding` and `footerVisualEffectViewPadding` are removed.
 - `scrollViewBottomContentInset` is removed: the bottom bar reserves space automatically.
 - `featureHorizontalAlignment` and `footerPrimaryActionButtonCornerRadius` are removed. Feature icons are top aligned and the primary action is a native capsule.

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Added optional `PrimaryAction.foregroundColor` for readable labels with custom button tints; nil preserves the native foreground.
+- Added `WhatsNewHistoryView` for scrolling, version-grouped release notes with customizable headings that default to marketing version and build, such as `1.2.3 (456)`.
+- Added optional per-release build numbers. Current-app release notes read the version and build from the bundle; historical releases retain explicitly supplied values.
+- Shared feature rows between the launch sheet and history, with icons above the text at accessibility sizes.
+- Feature titles remain semibold and align vertically with their symbols when a subtitle is omitted or empty.
+
 ## 3.0.0
 
 The first major release of Lickability's fork, based on upstream 2.2.1. Requires Xcode 26 or later and iOS 26, macOS 26, or visionOS 26. The package uses Swift 6 language mode.

@@ -114,24 +114,7 @@ private extension WhatsNewView {
     }
 
     func feature(_ feature: WhatsNew.Feature) -> some View {
-        let hasSubtitle = (feature.subtitle?.attributedString.length ?? 0) > 0
-        return HStack(alignment: .top, spacing: layout.featureHorizontalSpacing) {
-            feature.image.view()
-                .frame(width: layout.featureImageWidth)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: layout.featureVerticalSpacing) {
-                Text(whatsNewText: feature.title)
-                    .font(.body.weight(hasSubtitle ? .semibold : .regular))
-                    .foregroundStyle(.primary)
-                if hasSubtitle, let subtitle = feature.subtitle {
-                    Text(whatsNewText: subtitle)
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .accessibilityElement(children: .combine)
+        WhatsNewFeatureView(feature: feature, layout: layout)
     }
 
     func noticeContent(_ notice: WhatsNew.Notice) -> some View {
@@ -175,6 +158,7 @@ private extension WhatsNewView {
             whatsNew.primaryAction.onDismiss?()
         } label: {
             Text(whatsNewText: whatsNew.primaryAction.title)
+                .foregroundColor(whatsNew.primaryAction.foregroundColor)
                 .font(.body.weight(.semibold))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -276,4 +260,25 @@ private extension WhatsNewView {
         )
     )
     .dynamicTypeSize(.accessibility5)
+}
+
+#Preview("Custom primary action — Light") {
+    WhatsNewView(whatsNew: primaryActionContrastPreview)
+        .preferredColorScheme(.light)
+}
+
+#Preview("Custom primary action — Dark") {
+    WhatsNewView(whatsNew: primaryActionContrastPreview)
+        .preferredColorScheme(.dark)
+}
+
+@MainActor
+private var primaryActionContrastPreview: WhatsNew {
+    .init(
+        title: "Button Contrast",
+        features: [
+            .init(image: .init(systemName: "circle.lefthalf.filled"), title: "Readable Actions", subtitle: "Supply a contrasting label color when your button uses a custom tint.")
+        ],
+        primaryAction: .init(tint: .white, foregroundColor: .black)
+    )
 }
